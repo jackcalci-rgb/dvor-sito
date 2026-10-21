@@ -1,0 +1,6 @@
+site/data/auth.php
+site/data/photos.json
+site/uploads/*
+!site/uploads/.htaccess
+build/
+.DS_Store

@@ -1,0 +1,50 @@
+name: Pubblica il sito
+
+# main  -> produzione  (osteriadvor.com)
+# test  -> sito di prova (profumidistria.com), non indicizzabile
+on:
+  push:
+    branches: [main, test]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # In GitHub: Settings > Environments > production > "Required reviewers"
+    # per chiedere un'approvazione prima di ogni pubblicazione in produzione.
+    environment: ${{ github.ref_name == 'main' && 'production' || 'test' }}
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepara i file
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            cp -r site build
+          else
+            python3 tools/make_test.py site build "${{ vars.TEST_BASE_URL || 'http://profumidistria.com/' }}"
+          fi
+
+      - name: Configura SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Carica sulla VPS (rsync)
+        run: |
+          rsync -az --delete-after --itemize-changes \
+            --exclude 'data/' --exclude 'uploads/' --exclude 'config.php' --exclude 'images/vini/' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT:-22} -o StrictHostKeyChecking=yes" \
+            build/ "${SSH_USER}@${SSH_HOST}:${DEPLOY_PATH%/}/"

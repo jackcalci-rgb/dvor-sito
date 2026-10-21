@@ -1,0 +1,5 @@
+# Dati interni: non accessibili dal browser (tranne photos.json, usato dalla galleria)
+Options -Indexes
+<FilesMatch "^(auth\.php|\.lock)$">
+  Require all denied
+</FilesMatch>
