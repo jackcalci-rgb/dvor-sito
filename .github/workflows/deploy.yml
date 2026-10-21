@@ -2,10 +2,12 @@ name: Pubblica il sito
 
 # main  -> produzione  (osteriadvor.com)
 # test  -> sito di prova (profumidistria.com), non indicizzabile
+# Pubblicazione via SSH: DISATTIVATA al push (la VPS si aggiorna da sola con lo script
+# dvor-deploy.sh). Per riattivarla, rimetti i rami sotto "push" dopo aver creato i secrets.
 on:
-  push:
-    branches: [main, test]
   workflow_dispatch:
+  # push:
+  #   branches: [main, test]
 
 concurrency:
   group: deploy-${{ github.ref_name }}
