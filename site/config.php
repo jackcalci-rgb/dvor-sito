@@ -3,7 +3,7 @@
 return [
     'site_name'            => 'Osteria Enoteca Dvor',
     // Dove arrivano i messaggi del modulo contatti
-    'mail_to_reservations' => 'prenotazioni@osteriadvor.com',
+    'mail_to_reservations' => 'info@osteriadvor.com',
     'mail_to_info'         => 'info@osteriadvor.com',
     // Indirizzo "mittente" delle email del sito: deve essere un indirizzo del tuo dominio
     'mail_from'            => 'noreply@osteriadvor.com',

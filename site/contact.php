@@ -74,7 +74,7 @@ if ($name === '' || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL
 
 $labels = ['table' => 'Prenotazione di un tavolo', 'event' => 'Evento privato', 'other' => 'Altra richiesta'];
 if (!isset($labels[$reason])) $reason = 'other';
-$to = $reason === 'other' ? $cfg['mail_to_info'] : $cfg['mail_to_reservations'];
+$to = $cfg['mail_to_info'];
 
 $subject = 'Richiesta dal sito - ' . $labels[$reason];
 $body  = "Nuova richiesta dal sito ({$cfg['site_name']})\n\n";
