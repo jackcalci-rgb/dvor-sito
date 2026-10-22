@@ -1,0 +1,108 @@
+OSTERIA ENOTECA DVOR – SITO + GESTIONE FOTO
+===========================================
+
+COSA CONTIENE
+- index.html, menu.html, servizi.html  → il sito (italiano/inglese)
+- images/                               → foto e loghi del sito
+- admin/                                → area riservata per caricare le foto (si apre da /admin/)
+- uploads/                              → qui finiscono le foto caricate dall'area riservata
+- data/                                 → elenco foto e password (non toccare)
+- contact.php + config.php              → il modulo contatti che invia davvero le email
+
+INSTALLAZIONE CON WEBMIN (File Manager)
+1. Entra in Webmin (o Virtualmin) → File Manager e apri la cartella del sito:
+   di solito public_html. Per un test conviene una sottocartella, ad es. public_html/nuovo
+   (il sito si vedrà su  tuodominio/nuovo/ ). Il sito funziona in qualunque cartella.
+2. Carica il file dvor-site.zip in quella cartella (pulsante "Upload") ed estrailo
+   ("Extract"). Se si crea una cartella in più, sposta il contenuto dentro la cartella giusta.
+3. Permessi di scrittura: le cartelle  data  e  uploads  devono essere scrivibili da PHP.
+   Se non lo sono, seleziona la cartella → "Permissions" → 775 (oppure 777 se il
+   server lo richiede) e applica. Se il pannello ti permette di scegliere il proprietario,
+   dev'essere lo stesso utente del sito.
+4. Apri  tuodominio/…/admin/  ed entra con la password temporanea che ti ho scritto in chat.
+5. Per prima cosa vai in "Cambia password" e scegline una tua (almeno 10 caratteri).
+6. In fondo alla pagina admin trovi "Controlli del server": devono essere tutti con la spunta
+   verde (il controllo "https" lo sarà solo se il sito ha il certificato).
+7. Prova a caricare una foto: comparirà nella sezione "Galleria" del sito.
+8. Prova il modulo contatti dalla home e controlla che l'email arrivi a
+   prenotazioni@osteriadvor.com / info@osteriadvor.com.
+
+COME SI USA L'AREA FOTO
+- Scegli la sezione (Sale interne, Giardino, Panorama, Piatti, Eventi), poi scegli le foto o
+  trascinale. Vengono ridimensionate e ottimizzate in automatico.
+- Per ogni foto puoi cambiare sezione, scrivere la didascalia in italiano e in inglese,
+  oppure eliminarla (serve una seconda pressione per confermare).
+- La sezione Galleria compare sul sito solo quando c'è almeno una foto.
+
+EMAIL DEL MODULO CONTATTI
+- Gli indirizzi si cambiano in config.php (mail_to_reservations, mail_to_info, mail_from).
+- mail_from deve essere un indirizzo del tuo dominio (es. noreply@osteriadvor.com): se è di un
+  altro dominio molte caselle scartano il messaggio.
+- Se il server non riesce a inviare, il visitatore vede un messaggio con il tuo indirizzo e un
+  link che apre il suo programma di posta: nessuna richiesta va persa.
+- Se le email finiscono in spam o non arrivano, in Virtualmin controlla che SPF/DKIM del
+  dominio siano attivi (Server Configuration → Email Domain / DNS Records).
+
+RECENSIONI ("DICONO DI NOI" IN HOME)
+- Il blocco mostra a rotazione, in ordine casuale, le recensioni con 4-5 stelle.
+  Se non ci sono recensioni il blocco resta nascosto.
+- Recensioni Google automatiche (facoltativo): crea una chiave su Google Cloud
+  (console.cloud.google.com), attiva "Places API (New)", limita la chiave al tuo server
+  e incollala in config.php alla voce google_api_key. Google fornisce solo alcune
+  recensioni alla volta (circa 5 per lingua); il sito le aggiorna da solo ogni 12 ore.
+  L'uso della API può avere un costo: controlla il piano gratuito mensile di Google.
+- Tutte le altre recensioni: area admin -> "Recensioni" -> aggiungi a mano nome, stelle,
+  testo e data copiandole da Google/TripAdvisor/Facebook. Usa solo recensioni vere.
+
+SE QUALCOSA NON VA
+- Errore 500 aprendo il sito o l'admin: i file .htaccess (in uploads/ e in data/) a volte
+  non sono permessi dal server. Cancellali e riprova (la sicurezza resta garantita dal fatto
+  che PHP non esegue file in uploads/ solo se i .htaccess sono attivi: vedi nota sotto).
+- "Impossibile salvare": controlla i permessi di data/ e uploads/ (punto 3).
+- Foto troppo grande: il browser le riduce prima dell'invio, quindi non dovrebbe succedere;
+  in caso, aumenta upload_max_filesize in PHP (Virtualmin → Website Options → PHP).
+- Password dimenticata: elimina il file data/auth.php, poi chiedimi un nuovo file
+  oppure ricaricalo dal pacchetto originale (password temporanea).
+- Nota sicurezza: se non puoi usare i .htaccess, spostare la cartella data fuori da
+  public_html è la soluzione migliore (poi si cambia il percorso in admin/inc.php).
+
+IMPORTANTE – SITO ATTUALE (ODOO)
+Il sito attuale osteriadvor.com è fatto con Odoo (negozio, appuntamenti, newsletter).
+Se sostituisci il sito alla radice del dominio quelle funzioni non ci saranno più.
+Per questo conviene provarlo prima in una sottocartella o su un sottodominio.
+
+PRIVACY (da verificare con il vostro consulente)
+- La mappa di Google Maps e i font Google caricano contenuti da Google: di norma serve
+  l'informativa privacy / cookie e, per la mappa, un consenso preventivo.
+- Il modulo contatti ha già la casella di consenso; serve però una pagina "Privacy Policy".
+
+
+CARICARE FOTO PER OGNI SEZIONE
+- In admin/ ci sono 5 riquadri (Sale interne, Giardino, Panorama, Piatti, Eventi): ognuno carica nella sua sezione.
+- Dopo il login in admin/, aprendo la pagina Galleria compare un pulsante "Carica foto" in ogni sezione (lo vedi solo tu).
+
+
+LINGUE
+- Il sito è in italiano, inglese, tedesco, sloveno e olandese. Le bandierine in alto cambiano lingua e la scelta viene ricordata.
+- Le didascalie delle foto caricate da te restano in italiano/inglese: per le altre lingue si vede l'inglese.
+
+
+SEO / GOOGLE
+- Il pacchetto include robots.txt e sitemap.xml (indirizzo base: https://www.osteriadvor.com/ — se il dominio è diverso, sostituiscilo in sitemap.xml, robots.txt e nei tag canonical/og di ogni pagina).
+- Dopo la pubblicazione: apri Google Search Console, aggiungi il sito e invia https://www.osteriadvor.com/sitemap.xml.
+- Tieni aggiornata la scheda Google Business Profile con gli stessi orari, indirizzo e telefono del sito.
+
+
+CARTA VINI – FOTO DELLE BOTTIGLIE
+- Nella pagina vini.html le bottiglie in evidenza sono illustrazioni. Per usare le foto vere, carica in images/vini/
+  (PNG con sfondo trasparente o chiaro, circa 400x900) questi file: dom-perignon.png, veuve-clicquot.png, ruinart.png,
+  bollinger.png, ferrari-perle.png, piedimont-sfacciato.png, primosic-metamorfosis.png, blazevi-princic-105.png.
+  Se il file esiste viene mostrato al posto dell'illustrazione; se manca resta l'illustrazione.
+
+
+EVENTI (pagina "Eventi" in stile blog)
+- Entra in admin/ e usa il riquadro "Eventi": data, ora, titolo e descrizione in italiano e in inglese (per DE/SL/NL si vede l'inglese), prezzo o nota, link per prenotare (se vuoto va alla pagina Prenota), flyer (immagine) e menù della serata (immagine o PDF).
+- Gli eventi futuri sono in evidenza: il primo è in grande ("Prossimo evento", con il conto alla rovescia), gli altri sotto. Quelli passati finiscono da soli nell'archivio. In home compaiono i prossimi tre.
+- "Modifica" cambia un evento già inserito; "Elimina" lo toglie insieme ai suoi file.
+- Se il caricamento di un PDF o di un flyer grande fallisce, alza upload_max_filesize e post_max_size in PHP (il valore attuale è in fondo alla pagina admin, "Controlli del server").
+- I dati sono in data/events.json e i file in uploads/: il deploy automatico da GitHub non li tocca.

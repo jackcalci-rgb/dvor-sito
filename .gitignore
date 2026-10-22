@@ -4,3 +4,4 @@ site/uploads/*
 !site/uploads/.htaccess
 build/
 .DS_Store
+site/data/events.json

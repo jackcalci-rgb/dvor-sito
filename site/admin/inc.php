@@ -130,3 +130,41 @@ function save_image(array $f, string $cat): array {
     @chmod($dest, 0644);
     return ['id' => $id, 'file' => $id . '.jpg', 'cat' => in_array($cat, CATS, true) ? $cat : 'sale', 'it' => '', 'en' => '', 'w' => $w, 'h' => $h, 'createdAt' => (int)(microtime(true) * 1000)];
 }
+
+// ---------- eventi ----------
+function events_read(): array {
+    $f = DATA_DIR . '/events.json';
+    if (!is_file($f)) return [];
+    $j = json_decode((string)file_get_contents($f), true);
+    return is_array($j) ? $j : [];
+}
+function events_write(array $a): bool {
+    $f = DATA_DIR . '/events.json'; $tmp = $f . '.tmp';
+    if (@file_put_contents($tmp, json_encode(array_values($a), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT), LOCK_EX) === false) return false;
+    @chmod($tmp, 0644);
+    return @rename($tmp, $f);
+}
+// Menù dell'evento: immagine (JPG/PNG/WebP) oppure PDF
+function save_menu_file(array $f): array {
+    if (($f['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        $e = $f['error'] ?? 0;
+        throw new RuntimeException(in_array($e, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true) ? 'too_large' : 'upload');
+    }
+    $tmp = $f['tmp_name'];
+    if (!is_uploaded_file($tmp) && !(PHP_SAPI === 'cli-server' && is_file($tmp))) throw new RuntimeException('upload');
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($tmp);
+    if ($mime === 'application/pdf') {
+        if (filesize($tmp) > 15 * 1048576) throw new RuntimeException('too_large');
+        $id = 'menu-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.pdf';
+        if (!@move_uploaded_file($tmp, UP_DIR . '/' . $id) && !@copy($tmp, UP_DIR . '/' . $id)) throw new RuntimeException('write');
+        @chmod(UP_DIR . '/' . $id, 0644);
+        return ['file' => $id, 'type' => 'pdf'];
+    }
+    $r = save_image($f, 'eventi');
+    return ['file' => $r['file'], 'type' => 'image'];
+}
+function ev_clean(string $v, int $max): string { return mb_substr(trim(str_replace("\r", '', $v)), 0, $max); }
+function ev_oneline(string $v, int $max): string { return mb_substr(trim(str_replace(["\r", "\n"], ' ', $v)), 0, $max); }
+function up_unlink(?string $file): void {
+    if ($file) { $p = UP_DIR . '/' . basename($file); if (is_file($p)) @unlink($p); }
+}

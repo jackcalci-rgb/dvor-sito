@@ -8,7 +8,7 @@ $tok = logged_in() ? csrf() : '';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Gestione foto – Osteria Enoteca Dvor</title>
+<title>Gestione sito – Osteria Enoteca Dvor</title>
 <style>
 :root{--bg:#FBF6EE;--ink:#2A1D14;--muted:#7A6A5C;--line:#DCCDB8;--gold:#A8631F;--alt:#F1E7D6;--bad:#B3261E;--ok:#2F6B3A}
 @media (prefers-color-scheme:dark){:root{--bg:#1D1510;--ink:#F3E9DA;--muted:#B8A793;--line:#4A382B;--gold:#E0A04F;--alt:#2A1E16;--bad:#FF8A80;--ok:#8FD19A}}
@@ -22,6 +22,7 @@ h2{font-weight:400;font-size:1.4rem;margin:2rem 0 .6rem}
 button,.btn{font:inherit;font-size:.9rem;background:var(--ink);color:var(--bg);border:1px solid var(--ink);padding:.55rem 1rem;cursor:pointer}
 button.ghost{background:none;color:var(--ink);border-color:var(--line)}
 button:disabled{opacity:.5;cursor:default}
+textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:.55rem .65rem;width:100%;margin-top:.3rem}
 input,select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:.55rem .65rem;width:100%}
 label{display:block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 label input,label select{margin-top:.3rem;text-transform:none;letter-spacing:0}
@@ -53,7 +54,7 @@ label input,label select{margin-top:.3rem;text-transform:none;letter-spacing:0}
 
 <section id="login" hidden>
   <h1>Area riservata</h1>
-  <p style="color:var(--muted)">Osteria Enoteca Dvor – gestione della galleria foto.</p>
+  <p style="color:var(--muted)">Osteria Enoteca Dvor – gestione di eventi, foto e recensioni.</p>
   <form class="card" id="lf">
     <label>Password<input type="password" id="pw" autocomplete="current-password" required></label>
     <button type="submit">Entra</button>
@@ -62,8 +63,34 @@ label input,label select{margin-top:.3rem;text-transform:none;letter-spacing:0}
 </section>
 
 <section id="app" hidden>
-  <div class="top"><h1>Gestione foto</h1>
+  <div class="top"><h1>Gestione sito</h1>
     <div><a href="../" target="_blank" rel="noopener">Vedi il sito ↗</a> &nbsp; <button class="ghost" id="logout" type="button">Esci</button></div></div>
+
+  <h2>Eventi</h2>
+  <div class="card">
+    <p style="margin:0 0 .8rem;color:var(--muted);font-size:.92rem">Gli eventi compaiono nella pagina <strong>Eventi</strong> del sito e nella home: quelli futuri in evidenza (il primo in grande), quelli passati nell'archivio. Carica il flyer e, se vuoi, il menù della serata (immagine o PDF). I testi in tedesco, sloveno e olandese mostrano la versione inglese.</p>
+    <form id="ef">
+      <input type="hidden" id="eid">
+      <div class="grid2">
+        <label>Data<input id="ed" type="date" required></label>
+        <label>Ora (facoltativa)<input id="et" type="time"></label>
+        <label>Titolo in italiano<input id="eti" maxlength="120"></label>
+        <label>Title in English<input id="ete" maxlength="120"></label>
+      </div>
+      <div class="grid2" style="margin-top:.8rem">
+        <label>Descrizione in italiano<textarea id="edi" rows="5" maxlength="3000"></textarea></label>
+        <label>Description in English<textarea id="ede" rows="5" maxlength="3000"></textarea></label>
+        <label>Prezzo o nota (facoltativo, es. «45 € a persona»)<input id="ep" maxlength="80"></label>
+        <label>Link per prenotare (facoltativo: se vuoto va alla pagina Prenota)<input id="el" maxlength="300" placeholder="https://… oppure prenota.html"></label>
+        <label>Flyer o locandina (immagine)<input id="ef1" type="file" accept="image/jpeg,image/png,image/webp"></label>
+        <label>Menù della serata (immagine o PDF)<input id="ef2" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+      </div>
+      <div id="eold" style="margin-top:.6rem;font-size:.88rem;color:var(--muted)"></div>
+      <div style="margin-top:.8rem;display:flex;gap:.6rem;flex-wrap:wrap"><button type="submit" id="esave">Pubblica evento</button><button type="button" class="ghost" id="ecancel" hidden>Annulla modifica</button></div>
+      <div class="msg" id="emsg" role="status"></div>
+    </form>
+    <div class="list" id="elist" style="margin-top:1rem"></div>
+  </div>
 
   <h2>Carica nuove foto</h2>
   <p style="margin:0 0 1rem;color:var(--muted);font-size:.92rem">Ogni riquadro carica le foto direttamente nella sezione indicata della pagina Galleria. Puoi scegliere più foto insieme o trascinarle.</p>
@@ -122,12 +149,12 @@ function api(action,data,files){
 function show(app){$('app').hidden=!app;$('login').hidden=app}
 function err(j){
   var m={bad:'Password errata.',locked:'Troppi tentativi: riprova tra qualche minuto.',auth:'Sessione scaduta: accedi di nuovo.',csrf:'Sessione non valida: ricarica la pagina.',
-   nofile:'Nessun file ricevuto.',type:'Formato non supportato (usa JPG, PNG o WebP).',too_large:'La foto è troppo grande per il server.',upload:'Caricamento non riuscito: riprova.',write:'Impossibile salvare la foto: controlla i permessi di uploads/.',data:'Impossibile salvare: controlla i permessi della cartella data/.',
+   nofile:'Nessun file ricevuto.',type:'Formato non supportato (usa JPG, PNG o WebP).',too_large:'Il file è troppo grande per il server (limite in fondo alla pagina, «Controlli del server»).',upload:'Caricamento non riuscito: riprova.',write:'Impossibile salvare la foto: controlla i permessi di uploads/.',data:'Impossibile salvare: controlla i permessi della cartella data/.',
    short:'La nuova password è troppo corta.',server:'Errore del server.'};
   return m[j&&j.error]||('Qualcosa è andato storto'+(j&&j.error?' ('+j.error+')':'')+'.')}
 function boot(){
   api('list').then(function(j){
-    if(j.ok){show(true);render(j.photos);status();revLoad()}else show(false)}).catch(function(){show(false);say($('lmsg'),'Server non raggiungibile.','bad')})}
+    if(j.ok){show(true);render(j.photos);status();revLoad();evLoad()}else show(false)}).catch(function(){show(false);say($('lmsg'),'Server non raggiungibile.','bad')})}
 $('lf').addEventListener('submit',function(e){e.preventDefault();var b=e.target.querySelector('button');b.disabled=true;say($('lmsg'),'');
   api('login',{password:$('pw').value}).then(function(j){
     b.disabled=false;
@@ -207,6 +234,35 @@ function revLoad(){api('rev_list').then(function(j){if(j.ok)revRender(j.reviews)
 $('rf').addEventListener('submit',function(e){e.preventDefault();
   api('rev_add',{author:$('ra').value,rating:$('rr').value,date:$('rd').value,source:$('rs').value,text:$('rt').value}).then(function(j){
     if(j.ok){say($('rmsg'),'Recensione aggiunta.','ok');$('ra').value='';$('rt').value='';$('rd').value='';revLoad()}else say($('rmsg'),j.error==='rev_fields'?'Scrivi il nome e il testo.':err(j),'bad')})});
+
+function evMsgErr(j){var m={ev_date:'Scegli la data dell\'evento.',ev_title:'Scrivi almeno un titolo.',ev_link:'Il link deve iniziare con https:// oppure essere una pagina del sito (es. prenota.html).'};return m[j&&j.error]||err(j)}
+function evReset(){$('ef').reset();$('eid').value='';$('eold').textContent='';$('esave').textContent='Pubblica evento';$('ecancel').hidden=true}
+function evFmt(d){var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+var EVS=[];
+function evRender(){var el=$('elist');el.textContent='';
+  if(!EVS.length){var p=document.createElement('p');p.style.color='var(--muted)';p.textContent='Nessun evento inserito.';el.appendChild(p);return}
+  var today=new Date().toISOString().slice(0,10);
+  EVS.slice().sort(function(a,b){return a.date<b.date?1:-1}).forEach(function(r){
+    var d=document.createElement('div');d.className='ph';d.style.gridTemplateColumns=r.flyer?'84px 1fr auto':'1fr auto';
+    if(r.flyer){var im=document.createElement('img');im.src='../uploads/'+r.flyer;im.alt='';im.style.width='84px';im.style.height='84px';d.appendChild(im)}
+    var b=document.createElement('div');var h=document.createElement('strong');h.textContent=evFmt(r.date)+(r.time?' · '+r.time:'')+' — '+(r.title_it||r.title_en);
+    var st=document.createElement('div');st.style.cssText='font-size:.8rem;color:var(--muted);margin-top:.2rem';st.textContent=(r.date>=today?'In programma':'Passato')+(r.menu?' · con menù':'')+(r.flyer?' · con flyer':'');
+    b.appendChild(h);b.appendChild(st);
+    var bt=document.createElement('div');bt.style.cssText='display:grid;gap:.4rem;align-content:start';
+    var ed=document.createElement('button');ed.type='button';ed.className='del';ed.textContent='Modifica';
+    ed.addEventListener('click',function(){$('eid').value=r.id;$('ed').value=r.date;$('et').value=r.time||'';$('eti').value=r.title_it||'';$('ete').value=r.title_en||'';$('edi').value=r.desc_it||'';$('ede').value=r.desc_en||'';$('ep').value=r.price||'';$('el').value=r.link||'';
+      $('eold').textContent=(r.flyer?'Flyer già caricato (scegli un file per sostituirlo). ':'')+(r.menu?'Menù già caricato (scegli un file per sostituirlo).':'');
+      $('esave').textContent='Salva modifiche';$('ecancel').hidden=false;$('ef').scrollIntoView({behavior:'smooth',block:'center'})});
+    var x=document.createElement('button');x.type='button';x.className='del';x.textContent='Elimina';var tm=null;
+    x.addEventListener('click',function(){if(!x.classList.contains('sure')){x.classList.add('sure');x.textContent='Conferma';tm=setTimeout(function(){x.classList.remove('sure');x.textContent='Elimina'},4000);return}clearTimeout(tm);
+      api('ev_del',{id:r.id}).then(function(j){if(j.ok){evLoad()}else say($('emsg'),err(j),'bad')})});
+    bt.appendChild(ed);bt.appendChild(x);d.appendChild(b);d.appendChild(bt);el.appendChild(d)})}
+function evLoad(){api('ev_list').then(function(j){if(j.ok){EVS=j.events;evRender()}})}
+$('ecancel').addEventListener('click',evReset);
+$('ef').addEventListener('submit',function(e){e.preventDefault();var b=$('esave');b.disabled=true;say($('emsg'),'Salvataggio…');
+  var data={id:$('eid').value,date:$('ed').value,time:$('et').value,title_it:$('eti').value,title_en:$('ete').value,desc_it:$('edi').value,desc_en:$('ede').value,price:$('ep').value,link:$('el').value};
+  var files={};if($('ef1').files[0])files.flyer=[$('ef1').files[0],$('ef1').files[0].name];if($('ef2').files[0])files.menu=[$('ef2').files[0],$('ef2').files[0].name];
+  api('ev_save',data,files).then(function(j){b.disabled=false;if(j.ok){say($('emsg'),'Evento salvato.','ok');evReset();evLoad()}else say($('emsg'),evMsgErr(j),'bad')}).catch(function(){b.disabled=false;say($('emsg'),'Errore di rete.','bad')})});
 function status(){api('status').then(function(j){
   if(!j.ok)return;var ul=$('chk');ul.textContent='';
   j.checks.forEach(function(c){var li=document.createElement('li');li.className=c[1]?'y':'n';li.textContent=c[0];ul.appendChild(li)});

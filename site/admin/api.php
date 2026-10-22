@@ -89,6 +89,56 @@ switch ($a) {
         $ok = with_lock(function () use ($id) { $r = rev_read(); $k = array_values(array_filter($r, fn($x) => ($x['id'] ?? '') !== $id)); return count($k) < count($r) && rev_write($k); });
         out($ok ? 200 : 404, ['ok' => (bool)$ok]);
 
+    case 'ev_list':
+        out(200, ['ok' => true, 'events' => events_read()]);
+
+    case 'ev_save':
+        $date = (string)($_POST['date'] ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) out(422, ['ok' => false, 'error' => 'ev_date']);
+        $ti = ev_oneline((string)($_POST['title_it'] ?? ''), 120);
+        $te = ev_oneline((string)($_POST['title_en'] ?? ''), 120);
+        if ($ti === '' && $te === '') out(422, ['ok' => false, 'error' => 'ev_title']);
+        $time = preg_match('/^\d{2}:\d{2}$/', (string)($_POST['time'] ?? '')) ? (string)$_POST['time'] : '';
+        $link = trim((string)($_POST['link'] ?? ''));
+        if ($link !== '' && !preg_match('~^(https?://|mailto:|tel:|[a-z0-9._-]+\.html$)~i', $link)) out(422, ['ok' => false, 'error' => 'ev_link']);
+        $id = (string)($_POST['id'] ?? '');
+        $newFlyer = null; $newMenu = null;
+        try {
+            if (!empty($_FILES['flyer']) && ($_FILES['flyer']['error'] ?? 4) !== UPLOAD_ERR_NO_FILE) $newFlyer = save_image($_FILES['flyer'], 'eventi')['file'];
+            if (!empty($_FILES['menu']) && ($_FILES['menu']['error'] ?? 4) !== UPLOAD_ERR_NO_FILE) $newMenu = save_menu_file($_FILES['menu']);
+        } catch (RuntimeException $e) { up_unlink($newFlyer); out(422, ['ok' => false, 'error' => $e->getMessage()]); }
+        $rec = null;
+        $ok = with_lock(function () use (&$rec, $id, $date, $time, $ti, $te, $link, $newFlyer, $newMenu) {
+            $ev = events_read(); $idx = -1;
+            foreach ($ev as $i => $r) if ($id !== '' && ($r['id'] ?? '') === $id) $idx = $i;
+            $old = $idx >= 0 ? $ev[$idx] : ['id' => bin2hex(random_bytes(6)), 'createdAt' => (int)(microtime(true) * 1000)];
+            $r = $old;
+            $r['date'] = $date; $r['time'] = $time; $r['title_it'] = $ti; $r['title_en'] = $te;
+            $r['desc_it'] = ev_clean((string)($_POST['desc_it'] ?? ''), 3000); $r['desc_en'] = ev_clean((string)($_POST['desc_en'] ?? ''), 3000);
+            $r['price'] = ev_oneline((string)($_POST['price'] ?? ''), 80); $r['link'] = $link;
+            if ($newFlyer) { up_unlink($old['flyer'] ?? null); $r['flyer'] = $newFlyer; }
+            if (!empty($_POST['rm_flyer']) && !$newFlyer) { up_unlink($old['flyer'] ?? null); $r['flyer'] = ''; }
+            if ($newMenu) { up_unlink($old['menu'] ?? null); $r['menu'] = $newMenu['file']; $r['menuType'] = $newMenu['type']; }
+            if (!empty($_POST['rm_menu']) && !$newMenu) { up_unlink($old['menu'] ?? null); $r['menu'] = ''; $r['menuType'] = ''; }
+            if ($idx >= 0) $ev[$idx] = $r; else $ev[] = $r;
+            $rec = $r;
+            return events_write($ev);
+        });
+        if (!$ok) { up_unlink($newFlyer); up_unlink($newMenu['file'] ?? null); out(500, ['ok' => false, 'error' => 'data']); }
+        out(200, ['ok' => true, 'event' => $rec]);
+
+    case 'ev_del':
+        $id = (string)($_POST['id'] ?? '');
+        $ok = with_lock(function () use ($id) {
+            $ev = events_read(); $keep = []; $hit = null;
+            foreach ($ev as $r) { if (($r['id'] ?? '') === $id) $hit = $r; else $keep[] = $r; }
+            if (!$hit) return false;
+            if (!events_write($keep)) return false;
+            up_unlink($hit['flyer'] ?? null); up_unlink($hit['menu'] ?? null);
+            return true;
+        });
+        out($ok ? 200 : 404, ['ok' => (bool)$ok]);
+
     case 'status':
         $ini = fn($k) => ini_get($k);
         out(200, ['ok' => true, 'checks' => [
