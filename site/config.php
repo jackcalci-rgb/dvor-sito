@@ -7,6 +7,13 @@ return [
     'mail_to_info'         => 'info@osteriadvor.com',
     // Indirizzo "mittente" delle email del sito: deve essere un indirizzo del tuo dominio
     'mail_from'            => 'noreply@osteriadvor.com',
+    // Invio email tramite casella autenticata (consigliato). Lascia smtp_host vuoto per usare l'invio del server.
+    // smtp_secure: 'ssl' (porta 465) oppure 'tls' (porta 587)
+    'smtp_host'            => '',
+    'smtp_port'            => 465,
+    'smtp_secure'          => 'ssl',
+    'smtp_user'            => '',   // di solito l'indirizzo email completo, es. noreply@osteriadvor.com
+    'smtp_pass'            => '',   // <-- LA PASSWORD DELLA CASELLA VA QUI
     // Foto: dimensione massima in pixel del lato lungo
     'max_px'               => 1800,
     // Recensioni Google (facoltativo): chiave API di Google Cloud con "Places API (New)" attiva.
