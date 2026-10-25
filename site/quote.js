@@ -115,7 +115,7 @@
   var SORB = ['Sorbetto al limone e menta', 'Sorbetto al limone e fragola', 'Sorbetto di limone e zenzero', 'Sorbetto alcolico', 'Sorbetto analcolico'];
   var LISTS = {
     45: {
-      aperitivo: APER,
+      aperitivo: [],
       antipasti: [TAG, 'Polpettine', 'Frittatine', 'Lecca lecca di frico', 'Carpaccio di manzo', 'Lonza marinata con salsa carpione', 'Flan di verdure di stagione con fonduta di formaggi', 'Kipfel di patate con maionese al tartufo'],
       primi: ['Pasticcio tradizionale', 'Orzotto di verdure di stagione', 'Gnocchi con sugo di arrosto', 'Pasticcio di verdure', 'Pasta corta al ragù di cinghiale', 'Crespelle con asparagi', 'Parmigiana di melanzane', 'Orzotto con salsiccia e radicchio'],
       secondi: ['Ljubljanska alla griglia', 'Stinco di maiale al forno con polenta', 'Goulash di manzo', 'Grigliata mista (čevapčiči, spiedini, tagliata di manzo, pollo)'],
