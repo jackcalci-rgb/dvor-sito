@@ -11,6 +11,11 @@ for f in glob.glob(os.path.join(dst, '*.html')):
     s = s.replace('https://www.osteriadvor.com/', base)
     s = s.replace('content="index,follow,max-image-preview:large"', 'content="noindex,nofollow"')
     open(f, 'w', encoding='utf-8').write(s)
+ga = os.path.join(dst, 'analytics.js')
+if os.path.exists(ga):
+    t = open(ga, encoding='utf-8').read()
+    import re
+    open(ga, 'w', encoding='utf-8').write(re.sub(r"GA_ID = '[^']*'", "GA_ID = ''", t))
 open(os.path.join(dst, 'robots.txt'), 'w').write('User-agent: *\nDisallow: /\n')
 sm = os.path.join(dst, 'sitemap.xml')
 if os.path.exists(sm): os.remove(sm)
