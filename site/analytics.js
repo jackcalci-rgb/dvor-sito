@@ -1,7 +1,7 @@
 /* Google Analytics 4 con consenso (GDPR): il tag si carica SOLO se l'ospite accetta.
    Per cambiare ID basta modificare la riga GA_ID. Se vuoto, nessun banner e nessun tracciamento. */
 (function () {
-  var GA_ID = 'G-PNDH6L9QQS', KEY = 'dvor-consent';
+  var GA_ID = 'G-YPB97TQ2E8', KEY = 'dvor-consent';
   if (!GA_ID) return;
   function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
   function set(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
