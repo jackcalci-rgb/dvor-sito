@@ -142,7 +142,13 @@
       dessert: ['Tortino di frutta di stagione', 'Pannacotta', 'Tortino di cioccolato dal cuore morbido', 'Tiramisù']
     }
   };
-  LISTS[70] = LISTS[60];
+  // Menù 70: stessa base del 60 + proposte più ricercate (Gaspare 65 e 75 del gestionale)
+  LISTS[70] = {};
+  var COURSE_ORDER_KEYS = ['aperitivo', 'antipasti', 'primi', 'secondi', 'contorni', 'sorbetto', 'dessert'];
+  COURSE_ORDER_KEYS.forEach(function (c) { LISTS[70][c] = LISTS[60][c].slice(); });
+  LISTS[70].antipasti = LISTS[70].antipasti.concat(['Carpaccio di vitello con pesche di Fiumicello e salsa carpione', 'Tortino di verdure con fonduta di formaggi di malga', 'Insalata di piovra con patate, olive e pomodorini', 'Trittico di sardoni impanati e in savor', 'Salmone marinato su finocchio crudo con salsa alla birra e senape']);
+  LISTS[70].primi = LISTS[70].primi.concat(['Gnocchi alla griglia con pomodorini confit, verdure croccanti e pesto di basilico', 'Caponata con gamberi e zucchine al profumo di zafferano', 'Paccheri allo scoglio con il pescato del giorno']);
+  LISTS[70].secondi = LISTS[70].secondi.concat(['Filetto di maiale in crosta con prosciutto di San Daniele, salsa di senape e birra', 'Tortino di branzino con spinaci all’olio evo e scampo, con la sua salsa', 'Turbante di branzino']);
   var MAXP = { 45: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 2, sorbetto: 1, dessert: 2 }, 50: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 3, sorbetto: 1, dessert: 2 }, 60: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 4, sorbetto: 1, dessert: 2 } };
   MAXP[70] = MAXP[60];
   var COURSE_ORDER = ['aperitivo', 'antipasti', 'primi', 'secondi', 'contorni', 'sorbetto', 'dessert'];
