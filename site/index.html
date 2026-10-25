@@ -1017,5 +1017,6 @@ var UP=[];
 function render(){var h=document.getElementById('ev-home');if(!h)return;h.textContent='';UP.slice(0,3).forEach(function(r){h.appendChild(mini(r))})}
 load(function(u){UP=u;render()});onLang(render);
 })();</script><script id="themejs">(function(){var r=document.documentElement,b=document.querySelector(".thm");if(!b)return;var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;function eff(){var t=r.getAttribute("data-theme");return t||(mq&&mq.matches?"dark":"light")}function ui(){var e=eff();b.setAttribute("data-eff",e);b.setAttribute("aria-pressed",e==="dark"?"true":"false")}ui();b.addEventListener("click",function(){var n=eff()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("dvor-theme",n)}catch(e){}ui()});if(mq){(mq.addEventListener?mq.addEventListener("change",ui):mq.addListener&&mq.addListener(ui))}})();</script><script src="analytics.js" defer></script>
+<script src="notice.js" defer></script>
 </body>
 </html>
