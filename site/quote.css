@@ -1,0 +1,79 @@
+/* Calcolatore preventivo - usa le variabili colore del sito (chiaro/scuro) */
+.qt{--qt-r:0}
+.qt-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:3rem;align-items:start}
+.qt-set{border:0;margin:0 0 2.4rem;padding:0;min-width:0}
+.qt-set legend{font-family:var(--serif);font-size:1.7rem;font-weight:400;padding:0;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
+.qt-set legend b{display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;border:1px solid var(--gold);color:var(--gold);border-radius:50%;font:400 .85rem/1 var(--sans)}
+.qt-chips{display:flex;flex-wrap:wrap;gap:.6rem}
+.qt-chips.qt-col{flex-direction:column;align-items:stretch}
+.qt-chip{position:relative;cursor:pointer}
+.qt-chip input,.qt-card input{position:absolute;opacity:0;pointer-events:none}
+.qt-chip>span{display:block;border:1px solid var(--line);padding:.7rem 1.1rem;background:var(--bg);line-height:1.4;transition:border-color .2s,background .2s}
+.qt-chip i,.qt-lbl i,.qt-item i{font-style:normal;color:var(--muted);font-size:.9em}
+.qt-chip input:checked+span{border-color:var(--gold);background:var(--alt);box-shadow:inset 0 0 0 1px var(--gold)}
+.qt-chip input:focus-visible+span,.qt-card input:focus-visible+span{outline:2px solid var(--gold);outline-offset:3px}
+.qt-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem}
+.qt-card{cursor:pointer;position:relative}
+.qt-cb{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.1rem;border:1px solid var(--line);padding:1.1rem .6rem;background:var(--bg);transition:border-color .2s,background .2s}
+.qt-cb strong{font:400 1.9rem/1.1 var(--serif)}
+.qt-cb em{font-style:normal;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.qt-cb small{color:var(--muted);font-size:.8rem}
+.qt-card input:checked+.qt-cb{border-color:var(--gold);background:var(--alt);box-shadow:inset 0 0 0 1px var(--gold)}
+.qt-two{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.qt-lbl>span{display:block;margin-bottom:.4rem;line-height:1.4}
+.qt-step{display:inline-flex;align-items:stretch;border:1px solid var(--line);background:var(--bg)}
+.qt-step button{width:2.8rem;border:0;background:transparent;color:var(--ink);font:300 1.4rem/1 var(--sans);cursor:pointer}
+.qt-step button:hover{background:var(--alt)}
+.qt-step input{width:3.6rem;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:400 1.05rem var(--sans);background:transparent;color:var(--ink);padding:.6rem 0;-moz-appearance:textfield;appearance:textfield}
+.qt-step input::-webkit-outer-spin-button,.qt-step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qt-note{color:var(--muted);font-size:.92rem;margin:.9rem 0 0}
+.qt-side{position:sticky;top:6rem}
+.qt-sum{border:1px solid var(--gold);background:var(--alt);padding:1.8rem}
+.qt-cap{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+.qt-total{font:300 3rem/1.1 var(--serif);margin:.3rem 0 0}
+.qt-pp{color:var(--muted);margin-bottom:1rem}
+.qt-lines{list-style:none;margin:0 0 1rem;padding:1rem 0 0;border-top:1px solid var(--line);font-size:.95rem}
+.qt-lines li{display:flex;justify-content:space-between;gap:1rem;padding:.25rem 0}
+.qt-lines li b{font-weight:400;white-space:nowrap}
+.qt-dep{padding:.8rem 0;border-top:1px solid var(--line);font-size:.95rem}
+.qt-small{color:var(--muted);font-size:.8rem;line-height:1.55;margin:.8rem 0 0}
+.qt-cat{border-top:1px solid var(--line)}
+.qt-cat:last-of-type{border-bottom:1px solid var(--line)}
+.qt-cat summary{cursor:pointer;padding:.9rem 0;font-family:var(--serif);font-size:1.3rem;list-style:none;display:flex;justify-content:space-between}
+.qt-cat summary::-webkit-details-marker{display:none}
+.qt-cat summary::after{content:"+";color:var(--gold)}
+.qt-cat[open] summary::after{content:"−"}
+.qt-items{padding-bottom:.8rem}
+.qt-item{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.45rem 0}
+.qt-in{line-height:1.4}.qt-in i{margin-left:.5rem;white-space:nowrap}
+.qt-item .qt-step input{width:2.8rem}.qt-item .qt-step button{width:2.3rem}
+.qt-formwrap{margin-top:3rem;border-top:1px solid var(--line);padding-top:2.5rem;max-width:760px}
+.qt-form h3{font:400 1.8rem var(--serif);margin:0 0 .4rem}
+.qt-row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem}
+.qt-fld{display:block;margin-top:1rem}
+.qt-row2 .qt-fld{margin-top:0}
+.qt-fld>span{display:block;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.qt-fld input,.qt-fld textarea{width:100%;border:1px solid var(--line);border-radius:0;background:var(--bg);color:var(--ink);font:300 1rem var(--sans);padding:.75rem .9rem}
+.qt-fld input:focus,.qt-fld textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+.qt-chk{display:flex;gap:.7rem;align-items:flex-start;margin-top:1.2rem;font-size:.9rem;color:var(--muted)}
+.qt-chk input{margin-top:.35rem}
+.qt-msg{margin:1rem 0 0;padding:.8rem 1rem;border:1px solid var(--line)}
+.qt-ok{border-color:#4a8a4a}.qt-err,.qt-fail{border-color:#b04a3a}
+.qt-btns{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.6rem}
+.qt-btn{padding:1rem 2.2rem;border:1px solid var(--ink);background:transparent;color:var(--ink);font:400 .72rem var(--sans);letter-spacing:.26em;text-transform:uppercase;cursor:pointer;transition:background .25s,color .25s}
+.qt-btn.fill{background:var(--ink);color:var(--bg)}
+.qt-btn:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+.qt-btn:disabled{opacity:.5;cursor:wait}
+.qt-intro{max-width:62ch;margin:0 auto 3rem;text-align:center;color:var(--muted)}
+.qt-brunch-box{border-top:1px solid var(--line)}
+@media (max-width:900px){
+  .qt-grid{grid-template-columns:1fr;gap:1.5rem}
+  .qt-side{position:static;order:-1}
+  .qt-total{font-size:2.4rem}
+}
+@media (max-width:560px){.qt-two,.qt-row2{grid-template-columns:1fr}.qt-set legend{font-size:1.45rem}}
+@media print{
+  header.top,footer,.qt-formwrap .qt-btns,.qt-main,.qt-chk,.qt-fld,.qt-form h3,.qt-form .qt-note,.phero,#notice,.dvor-notice{display:none!important}
+  .qt-grid{display:block}.qt-side{position:static}.qt-sum{border:0;padding:0}
+  body{background:#fff;color:#000}
+}
