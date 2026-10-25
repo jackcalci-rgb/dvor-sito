@@ -108,6 +108,55 @@
     });
   }
 
+
+  /* ============ PORTATE (nomi dei piatti in italiano; non cambiano il prezzo indicativo) ============ */
+  var TAG = 'Tagliere di salumi e formaggi (prosciutto di San Daniele e formaggi)';
+  var APER = ['Pancetta cotta nel pane con kren', 'Frico croccante', 'Toc in braide', 'Pollo in tempura', 'Polpettine', 'Frichetti', 'Frittatine', 'Lecca lecca di frico', 'Frico fritto', 'Pulled pork con insalatina di cavoli', 'Zucchine e melanzane fritte'];
+  var SORB = ['Sorbetto al limone e menta', 'Sorbetto al limone e fragola', 'Sorbetto di limone e zenzero', 'Sorbetto alcolico', 'Sorbetto analcolico'];
+  var LISTS = {
+    45: {
+      aperitivo: APER,
+      antipasti: [TAG, 'Polpettine', 'Frittatine', 'Lecca lecca di frico', 'Carpaccio di manzo', 'Lonza marinata con salsa carpione', 'Flan di verdure di stagione con fonduta di formaggi', 'Kipfel di patate con maionese al tartufo'],
+      primi: ['Pasticcio tradizionale', 'Orzotto di verdure di stagione', 'Gnocchi con sugo di arrosto', 'Pasticcio di verdure', 'Pasta corta al ragù di cinghiale', 'Crespelle con asparagi', 'Parmigiana di melanzane', 'Orzotto con salsiccia e radicchio'],
+      secondi: ['Ljubljanska alla griglia', 'Stinco di maiale al forno con polenta', 'Goulash di manzo', 'Grigliata mista (čevapčiči, spiedini, tagliata di manzo, pollo)'],
+      contorni: ['Patate al forno', 'Insalata mista', 'Verdure grigliate', 'Patate in tecia', 'Kipfel'],
+      sorbetto: [],
+      dessert: ['Tortino di frutta di stagione', 'Pannacotta', 'Sorbetto analcolico']
+    },
+    50: {
+      aperitivo: APER,
+      antipasti: [TAG, 'Frittatine', 'Frico fritto', 'Carpaccio di bresaola', 'Carpaccio di manzo', 'Polpettine', 'Lonza marinata con salsa carpione e kren', 'Kipfel di patate con maionese al tartufo', 'Flan di erbette di campo con fonduta di formaggi e guanciale croccante', 'Flan di erbette di campo (vegano)', 'Pancetta cotta nel pane con kren', 'Tortino di zucca con fonduta di formaggio di malga', 'Pulled pork con insalatina di cavoli', 'Pollo in tempura', 'Toc in braide con funghi misti'],
+      primi: ['Fusi Dvor con raguttino di pollo, zafferano e pistacchio', 'Gnocchi con sugo di arrosto', 'Gnocchi con goulash', 'Pasticcio tradizionale con fonduta di formaggi', 'Orzotto di frutti di mare', 'Orzotto con funghi porcini', 'Orzotto con salsiccia e radicchio', 'Crespelle con asparagi', 'Fuži istriani con ragù di cortile', 'Fuži istriani con ragù di San Daniele', 'Lasagna con ragù di salsiccia'],
+      secondi: ['Goulash di manzo', 'Arrosto di vitello con funghi porcini', 'Guancette di manzo al refosco', 'Costicine di maiale sous vide', 'Lonza di maiale alla birra', 'Ljubljanska alla griglia', 'Stinco di maiale al forno con polenta', 'Grigliata mista (čevapčiči, spiedini, tagliata di manzo, pollo)', 'Filetto di maiale in crosta con prosciutto di San Daniele', 'Lingua alla Wellington con speck e senape', 'Scaloppa di sedano rapa in crosta di mais con vinaigrette di noci (vegetariano)', 'Tartare di barbabietola rossa (vegano)'],
+      contorni: ['Contorni di stagione', 'Verdure grigliate', 'Patate al forno', 'Insalata mista', 'Verdure cotte', 'Spinaci al burro', 'Patate in tecia', 'Caponata'],
+      sorbetto: SORB,
+      dessert: ['Tortino di frutta di stagione', 'Pannacotta', 'Palačinke con Nutella o marmellata', 'Tiramisù', 'Torta alle mele', 'Torta rustica alle ciliegie', 'Torta rustica alle pere e cioccolato', 'Carsolina']
+    },
+    60: {
+      aperitivo: APER,
+      antipasti: ['Taglieri di salumi e formaggi di malga', 'Kipfel di patate con maionese al tartufo', 'Pomodori ripieni gratinati', 'Lonza marinata con salsa carpione e kren', 'Salmone marinato al pepe rosa', 'Flan di erbette di campo'],
+      primi: ['Fusi istriani al tartufo nero e gamberoni', 'Crespelle di verdure di stagione', 'Pasticcio tradizionale con fonduta di formaggi', 'Orzotto di frutti di mare', 'Risotto con crema di zafferano rosso'],
+      secondi: ['Rollè di tacchino', 'Guancette di manzo al refosco', 'Filetto di maiale al pepe verde', 'Costicine di agnello alla griglia'],
+      contorni: ['Verdure cotte', 'Kipfel', 'Patate in tecia', 'Verdure grigliate', 'Patate al forno', 'Insalata mista', 'Spinaci al burro'],
+      sorbetto: SORB,
+      dessert: ['Tortino di frutta di stagione', 'Pannacotta', 'Tortino di cioccolato dal cuore morbido', 'Tiramisù']
+    }
+  };
+  LISTS[70] = LISTS[60];
+  var MAXP = { 45: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 2, sorbetto: 1, dessert: 2 }, 50: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 3, sorbetto: 1, dessert: 2 }, 60: { aperitivo: 3, antipasti: 3, primi: 2, secondi: 2, contorni: 4, sorbetto: 1, dessert: 2 } };
+  MAXP[70] = MAXP[60];
+  var COURSE_ORDER = ['aperitivo', 'antipasti', 'primi', 'secondi', 'contorni', 'sorbetto', 'dessert'];
+  var COURSE_TITLE = {
+    aperitivo: [T('Aperitivo di benvenuto', 'Welcome aperitif', 'Willkommensaperitif', 'Pozdravni aperitiv', 'Welkomstaperitief'), 'Aperitivo'],
+    antipasti: [T('Antipasti', 'Starters', 'Vorspeisen', 'Predjedi', 'Voorgerechten'), 'Antipasti'],
+    primi: [T('Primi', 'First courses', 'Erste Gänge', 'Prve jedi', 'Eerste gangen'), 'Primi'],
+    secondi: [T('Secondi', 'Main courses', 'Hauptgänge', 'Glavne jedi', 'Hoofdgerechten'), 'Secondi'],
+    contorni: [T('Contorni', 'Sides', 'Beilagen', 'Priloge', 'Bijgerechten'), 'Contorni'],
+    sorbetto: [T('Sorbetto', 'Sorbet', 'Sorbet', 'Sorbet', 'Sorbet'), 'Sorbetto'],
+    dessert: [T('Dessert', 'Dessert', 'Dessert', 'Sladica', 'Dessert'), 'Dessert']
+  };
+  var UPTO = T('scegli fino a', 'choose up to', 'bis zu', 'izberite do', 'kies maximaal');
+
   /* ============ EVENTI ============ */
   var EVENTS = [
     ['matrimonio', 'Matrimonio', T('Matrimonio', 'Wedding', 'Hochzeit', 'Poroka', 'Bruiloft')],
@@ -136,19 +185,20 @@
       h += '<label class="qt-card"><input type="radio" name="ev-menu" value="' + p + '"' + (i === 1 ? ' checked' : '') + '><span class="qt-cb"><strong>' + eur0(p) + '</strong><em>' + MENUNAME[p] + '</em><small>' + T('a persona', 'per person', 'pro Person', 'na osebo', 'per persoon') + '</small></span></label>';
     });
     h += '</div><p class="qt-note">' + T('Cucina friulana e di confine con prodotti del Collio. Il dettaglio dei piatti lo definiamo insieme a te, in base al menù scelto e alla stagione.', 'Friulian and border cuisine with Collio produce. We define the dishes together with you, based on the menu and the season.', 'Friulanische Grenzküche mit Produkten aus dem Collio. Die Gerichte legen wir gemeinsam mit Ihnen fest, je nach Menü und Saison.', 'Furlanska in obmejna kuhinja z lokalnimi pridelki. Jedi določimo skupaj z vami glede na jedilnik in sezono.', 'Friulaanse grenskeuken met producten uit de Collio. De gerechten bepalen we samen met jou, afhankelijk van menu en seizoen.') + '</p></fieldset>';
-    h += '<fieldset class="qt-set"><legend><b>4</b>' + T('Bevande', 'Drinks', 'Getränke', 'Pijače', 'Dranken') + '</legend><div class="qt-chips qt-col">' +
+    h += '<fieldset class="qt-set"><legend><b>4</b>' + T('Scegli le portate', 'Choose the courses', 'Gänge wählen', 'Izberite jedi', 'Kies de gangen') + '</legend><p class="qt-note" style="margin:0 0 1rem">' + T('Facoltativo: indica i piatti che preferisci. Le scelte non cambiano il prezzo indicativo e la composizione definitiva la concordiamo insieme. I nomi dei piatti sono in italiano: se hai dubbi, ti aiutiamo volentieri.', 'Optional: tell us the dishes you prefer. Choices do not change the indicative price and we agree the final selection together. Dish names are in Italian: happy to help if anything is unclear.', 'Optional: Teilen Sie uns Ihre Wunschgerichte mit. Die Auswahl ändert den Richtpreis nicht, die endgültige Zusammenstellung legen wir gemeinsam fest. Die Gerichte sind auf Italienisch benannt: Wir helfen gern weiter.', 'Neobvezno: povejte nam, katere jedi imate raje. Izbira ne spremeni okvirne cene, končno sestavo uskladimo skupaj. Imena jedi so v italijanščini: z veseljem pomagamo.', 'Optioneel: geef aan welke gerechten je het liefst hebt. De keuze verandert de indicatieve prijs niet en de definitieve samenstelling bepalen we samen. De gerechten hebben Italiaanse namen: we helpen graag.') + '</p><div id="ev-courses"></div></fieldset>';
+    h += '<fieldset class="qt-set"><legend><b>5</b>' + T('Bevande', 'Drinks', 'Getränke', 'Pijače', 'Dranken') + '</legend><div class="qt-chips qt-col">' +
       '<label class="qt-chip"><input type="radio" name="ev-dr" value="none" checked><span>' + T('Le gestisco io / le scelgo con voi', 'I will arrange them / decide with you', 'Ich kümmere mich selbst / wir entscheiden gemeinsam', 'Uredim sam / se odločimo skupaj', 'Zelf regelen / samen beslissen') + '</span></label>' +
       '<label class="qt-chip"><input type="radio" name="ev-dr" value="house"><span>' + T('Vino della casa', 'House wine', 'Hauswein', 'Hišno vino', 'Huiswijn') + ' <i>(~' + PRICES.wineHouseLitresPerAdult + ' L ' + T('a adulto', 'per adult', 'pro Erwachsenem', 'na odraslega', 'per volwassene') + ', ' + eur0(PRICES.wineHouseLitre) + '/L)</i></span></label>' +
       '<label class="qt-chip"><input type="radio" name="ev-dr" value="bottles"><span>' + T('Vini in bottiglia', 'Bottled wines', 'Flaschenweine', 'Vino v steklenicah', 'Wijn op fles') + ' <i>(1 ' + T('bottiglia ogni', 'bottle every', 'Flasche pro', 'steklenica na', 'fles per') + ' ' + PRICES.adultsPerBottle + ' ' + T('adulti, da', 'adults, from', 'Erwachsene, ab', 'odrasle, od', 'volwassenen, vanaf') + ' ' + eur0(PRICES.wineBottle) + ')</i></span></label>' +
       '</div></fieldset>';
-    h += '<fieldset class="qt-set"><legend><b>5</b>' + T('Extra', 'Extras', 'Extras', 'Dodatki', 'Extra') + '</legend><div class="qt-chips qt-col">' +
+    h += '<fieldset class="qt-set"><legend><b>6</b>' + T('Extra', 'Extras', 'Extras', 'Dodatki', 'Extra') + '</legend><div class="qt-chips qt-col">' +
       '<label class="qt-chip"><input type="checkbox" id="ev-cake"><span>' + T('Torta', 'Cake', 'Torte', 'Torta', 'Taart') + ' <i>(' + (PRICES.cakeKgPerPerson * 1000) + ' g ' + T('a persona', 'per person', 'pro Person', 'na osebo', 'per persoon') + ', ' + eur0(PRICES.cakeKg) + '/kg)</i></span></label>' +
       '<label class="qt-chip"><input type="checkbox" id="ev-gz"><span>' + T('Giardino con gazebo', 'Garden with gazebo', 'Garten mit Pavillon', 'Vrt s paviljonom', 'Tuin met prieel') + ' <i>(+ ' + eur0(PRICES.gazebo) + ')</i></span></label>' +
       '</div></fieldset>';
     h += '</div>';
     h += '<aside class="qt-side"><div class="qt-sum"><span class="qt-cap">' + T('Prezzo indicativo', 'Indicative price', 'Richtpreis', 'Okvirna cena', 'Indicatieve prijs') + '</span>' +
       '<div class="qt-total" id="ev-total">–</div><div class="qt-pp" id="ev-pp"></div><ul class="qt-lines" id="ev-lines"></ul>' +
-      '<div class="qt-dep" id="ev-dep"></div><p class="qt-small">' + DISCLAIMER + '</p></div></aside></div>';
+      '<div class="qt-picks" id="ev-picks"></div><div class="qt-dep" id="ev-dep"></div><p class="qt-small">' + DISCLAIMER + '</p></div></aside></div>';
     h += '<div class="qt-formwrap">' + formHtml('ev') + '</div>';
     root.innerHTML = h;
 
@@ -173,6 +223,57 @@
       document.getElementById('ev-lines').innerHTML = L.map(function (l) { return '<li><span>' + l[0] + '</span><b>' + eur0(l[1]) + '</b></li>'; }).join('');
       document.getElementById('ev-dep').innerHTML = T('Per confermare: caparra del ' + (PRICES.deposit * 100) + '% (circa ' + eur0(total * PRICES.deposit) + ').', 'To confirm: ' + (PRICES.deposit * 100) + '% deposit (about ' + eur0(total * PRICES.deposit) + ').', 'Zur Bestätigung: Anzahlung von ' + (PRICES.deposit * 100) + ' % (ca. ' + eur0(total * PRICES.deposit) + ').', 'Za potrditev: akontacija ' + (PRICES.deposit * 100) + ' % (približno ' + eur0(total * PRICES.deposit) + ').', 'Ter bevestiging: voorschot van ' + (PRICES.deposit * 100) + '% (ongeveer ' + eur0(total * PRICES.deposit) + ').');
     }
+
+    var picks = {};
+    function esc2(x) { return esc(x); }
+    function renderCourses() {
+      var menu = parseInt(root.querySelector('input[name=ev-menu]:checked').value, 10), L = LISTS[menu], mx = MAXP[menu], h2 = '';
+      COURSE_ORDER.forEach(function (c) {
+        if (!L[c].length) return;
+        var sel = picks[c] || [];
+        h2 += '<details class="qt-cat" data-c="' + c + '"' + (c === 'antipasti' ? ' open' : '') + '><summary>' + COURSE_TITLE[c][0] + ' <small class="qt-cnt"></small></summary><div class="qt-items"><p class="qt-note" style="margin:0 0 .6rem">' + UPTO + ' ' + mx[c] + '</p>';
+        L[c].forEach(function (d, i) {
+          h2 += '<label class="qt-dish"><input type="checkbox" data-c="' + c + '" data-i="' + i + '"' + (sel.indexOf(d) >= 0 ? ' checked' : '') + '><span>' + esc2(d) + '</span></label>';
+        });
+        h2 += '</div></details>';
+      });
+      document.getElementById('ev-courses').innerHTML = h2;
+      limits();
+    }
+    function readPicks() {
+      var menu = parseInt(root.querySelector('input[name=ev-menu]:checked').value, 10), L = LISTS[menu], o = {};
+      [].forEach.call(root.querySelectorAll('#ev-courses input:checked'), function (cb) {
+        var c = cb.getAttribute('data-c'); (o[c] = o[c] || []).push(L[c][parseInt(cb.getAttribute('data-i'), 10)]);
+      });
+      return o;
+    }
+    function limits() {
+      var menu = parseInt(root.querySelector('input[name=ev-menu]:checked').value, 10), mx = MAXP[menu];
+      COURSE_ORDER.forEach(function (c) {
+        var boxes = root.querySelectorAll('#ev-courses input[data-c="' + c + '"]'); if (!boxes.length) return;
+        var n = 0; [].forEach.call(boxes, function (b) { if (b.checked) n++; });
+        [].forEach.call(boxes, function (b) { b.disabled = !b.checked && n >= mx[c]; });
+        var d = root.querySelector('#ev-courses details[data-c="' + c + '"] .qt-cnt'); if (d) d.textContent = n ? '(' + n + '/' + mx[c] + ')' : '';
+      });
+    }
+    renderCourses();
+    root.addEventListener('change', function (e) {
+      if (e.target.name === 'ev-menu') { prunePicks(); renderCourses(); showPicks(); }
+      else if (e.target.closest && e.target.closest('#ev-courses')) { limits(); picks = readPicks(); showPicks(); }
+    });
+    function prunePicks() {
+      var menu = parseInt(root.querySelector('input[name=ev-menu]:checked').value, 10), L = LISTS[menu], mx = MAXP[menu], o = {};
+      COURSE_ORDER.forEach(function (c) {
+        var k = (picks[c] || []).filter(function (d) { return L[c].indexOf(d) >= 0; }).slice(0, mx[c]);
+        if (k.length) o[c] = k;
+      });
+      picks = o;
+    }
+    function showPicks() {
+      var h3 = '';
+      COURSE_ORDER.forEach(function (c) { if (picks[c] && picks[c].length) h3 += '<div class="qt-pk"><b>' + COURSE_TITLE[c][0] + '</b><br>' + picks[c].map(esc2).join(' · ') + '</div>'; });
+      document.getElementById('ev-picks').innerHTML = h3 ? '<div class="qt-cap" style="margin:1rem 0 .4rem">' + T('Le tue scelte', 'Your choices', 'Ihre Auswahl', 'Vaša izbira', 'Jouw keuzes') + '</div>' + h3 : '';
+    }
     root.addEventListener('input', calc); root.addEventListener('change', calc);
     bindSteppers(root, calc); calc();
 
@@ -180,6 +281,8 @@
     function summary() {
       var s = 'Tipo evento: ' + typeLabel() + '\nAdulti: ' + state.ad + '\nBambini: ' + state.kd + '\n\n';
       s += state.lines.map(function (l) { return '- ' + l[2] + ': ' + eur0(l[1]); }).join('\n');
+      var pk = ''; COURSE_ORDER.forEach(function (c) { if (picks[c] && picks[c].length) pk += '\n' + COURSE_TITLE[c][1] + ': ' + picks[c].join('; '); });
+      if (pk) s += '\n\nPORTATE SCELTE (menù ' + state.menu + ' €):' + pk;
       s += '\n\nTOTALE INDICATIVO: circa ' + eur0(state.total) + ' (caparra 50%: ' + eur0(state.total * PRICES.deposit) + ')';
       return s;
     }

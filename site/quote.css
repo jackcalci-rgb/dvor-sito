@@ -77,3 +77,8 @@
   .qt-grid{display:block}.qt-side{position:static}.qt-sum{border:0;padding:0}
   body{background:#fff;color:#000}
 }
+.qt-dish{display:flex;gap:.7rem;align-items:flex-start;padding:.35rem 0;cursor:pointer;line-height:1.45}
+.qt-dish input{margin-top:.4rem;accent-color:var(--gold)}
+.qt-dish input:disabled+span{opacity:.45}
+.qt-cnt{color:var(--gold);font:400 .85rem var(--sans)}
+.qt-pk{font-size:.88rem;margin:.4rem 0;color:var(--muted)}.qt-pk b{color:var(--ink);font-weight:400}
