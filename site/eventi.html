@@ -289,7 +289,7 @@ bs.forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute(
 .evlb img{max-width:100%;max-height:100%;object-fit:contain}
 .evhome{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;margin:2rem auto 0;max-width:1000px;text-align:left}
 .evhome:empty{display:none}
-.evhome .evc .evimg{aspect-ratio:4/3;object-fit:cover;height:auto}
+.evhome .evc .evimg{aspect-ratio:4/3;object-fit:cover;height:auto}.evc .evimg.wide,.evhome .evc .evimg.wide{aspect-ratio:auto;object-fit:contain;height:auto}.evhome .evc .evimg{object-position:top}
 .evhome .evc .evd{-webkit-line-clamp:2}
 @media (max-width:980px){.evgrid,.evhome{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.evfeat{grid-template-columns:1fr;gap:1.4rem;padding:1rem}}
@@ -448,6 +448,7 @@ function ttl(r){var l=L();return l==='it'?(r.title_it||r.title_en||''):(r.title_
 function dsc(r){var l=L();return l==='it'?(r.desc_it||r.desc_en||''):(r.desc_en||r.desc_it||'')}
 function fmt(d,o){return new Date(d+'T12:00:00Z').toLocaleDateString(LOC[L()],Object.assign({timeZone:'UTC'},o))}
 function cd(d){var n=dd(d);return n===0?T('today'):n===1?T('tomorrow'):T('days').replace('{n}',n)}
+document.addEventListener('load',function(e){var i=e.target;if(i&&i.classList&&i.classList.contains('evimg')&&i.naturalWidth/i.naturalHeight>1.6)i.classList.add('wide')},true);
 function upf(f){return String(f).indexOf('/')>=0?f:'uploads/'+f}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function bookHref(r){return r.link||'prenota.html'}
