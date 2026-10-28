@@ -22,11 +22,12 @@
 /* Google Analytics 4 con consenso (GDPR): il tag si carica SOLO se l'ospite accetta.
    Per cambiare ID basta modificare la riga GA_ID. Se vuoto, nessun banner e nessun tracciamento. */
 (function () {
-  var GA_ID = 'G-YPB97TQ2E8', KEY = 'dvor-consent';
-  if (!GA_ID) return;
+  var GA_ID = 'G-YPB97TQ2E8', FB_ID = '181965757227814', KEY = 'dvor-consent';
+  if (!GA_ID && !FB_ID) return;
   function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
   function set(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
   function load() {
+    loadFB(); if (!GA_ID) return;
     if (window.__dvorGA) return; window.__dvorGA = 1;
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { dataLayer.push(arguments); };
@@ -36,6 +37,7 @@
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID; document.head.appendChild(s);
   }
   function drop() {
+    dropFB();
     // se in precedenza era stato accettato, cancella i cookie di Google Analytics
     document.cookie.split(';').forEach(function (c) {
       var n = c.split('=')[0].trim();
@@ -46,12 +48,30 @@
       }
     });
   }
+  // Pixel di Meta (Facebook/Instagram): si carica SOLO dopo il consenso, mai prima. Se FB_ID e' vuoto non succede nulla.
+  function loadFB() {
+    if (!FB_ID || window.__dvorFB) return; window.__dvorFB = 1;
+    !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s); }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', FB_ID); fbq('track', 'PageView');
+  }
+  function dropFB() {
+    document.cookie.split(';').forEach(function (c) {
+      var n = c.split('=')[0].trim();
+      if (n === '_fbp' || n === '_fbc') {
+        ['', '.' + location.hostname, '.' + location.hostname.replace(/^www\./, '')].forEach(function (d) {
+          document.cookie = n + '=; Max-Age=0; path=/' + (d ? '; domain=' + d : '');
+        });
+      }
+    });
+  }
   var T = {
-    t: ['Usiamo Google Analytics per capire come viene usato il sito e migliorarlo, solo se acconsenti.',
-        'We use Google Analytics to understand how the site is used and improve it, only if you agree.',
-        'Wir verwenden Google Analytics, um die Nutzung der Website zu verstehen und sie zu verbessern, nur mit deiner Einwilligung.',
-        'Uporabljamo Google Analytics, da razumemo uporabo spletnega mesta in ga izboljšamo, le z vašim soglasjem.',
-        'We gebruiken Google Analytics om te begrijpen hoe de site wordt gebruikt en om hem te verbeteren, alleen met je toestemming.'],
+    t: ['Usiamo Google Analytics e il Pixel di Meta per capire come viene usato il sito e misurare le nostre campagne, solo se acconsenti.',
+        'We use Google Analytics and the Meta Pixel to understand how the site is used and to measure our campaigns, only if you agree.',
+        'Wir verwenden Google Analytics und den Meta-Pixel, um die Nutzung der Website zu verstehen und unsere Kampagnen zu messen, nur mit deiner Einwilligung.',
+        'Uporabljamo Google Analytics in Meta Pixel, da razumemo uporabo spletnega mesta in merimo svoje kampanje, le z vašim soglasjem.',
+        'We gebruiken Google Analytics en de Meta-pixel om te begrijpen hoe de site wordt gebruikt en om onze campagnes te meten, alleen met je toestemming.'],
     p: ['Privacy policy', 'Privacy policy', 'Datenschutz', 'Zasebnost', 'Privacy'],
     a: ['Accetta', 'Accept', 'Akzeptieren', 'Sprejmem', 'Accepteren'],
     r: ['Rifiuta', 'Decline', 'Ablehnen', 'Zavrnem', 'Weigeren']

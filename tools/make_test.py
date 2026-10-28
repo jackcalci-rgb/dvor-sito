@@ -15,7 +15,7 @@ ga = os.path.join(dst, 'analytics.js')
 if os.path.exists(ga):
     t = open(ga, encoding='utf-8').read()
     import re
-    open(ga, 'w', encoding='utf-8').write(re.sub(r"UMAMI_ID = '[^']*'", "UMAMI_ID = ''", re.sub(r"GA_ID = '[^']*'", "GA_ID = ''", t)))
+    open(ga, 'w', encoding='utf-8').write(re.sub(r"FB_ID = '[^']*'", "FB_ID = ''", re.sub(r"UMAMI_ID = '[^']*'", "UMAMI_ID = ''", re.sub(r"GA_ID = '[^']*'", "GA_ID = ''", t))))
 open(os.path.join(dst, 'robots.txt'), 'w').write('User-agent: *\nDisallow: /\n')
 sm = os.path.join(dst, 'sitemap.xml')
 if os.path.exists(sm): os.remove(sm)
