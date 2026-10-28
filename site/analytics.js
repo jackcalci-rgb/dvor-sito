@@ -1,7 +1,7 @@
 /* Umami (statistiche senza cookie, non serve il consenso). Per attivarlo basta incollare qui sotto il
    "Website ID" che si trova nel pannello di Umami. Se vuoto, non succede nulla. */
 (function () {
-  var UMAMI_ID = '', UMAMI_SRC = 'https://cloud.umami.is/script.js';
+  var UMAMI_ID = 'a3f8ca53-e0de-486f-90b3-46fd79783321', UMAMI_SRC = 'https://cloud.umami.is/script.js';
   if (!UMAMI_ID) return;
   var s = document.createElement('script'); s.defer = true; s.src = UMAMI_SRC; s.setAttribute('data-website-id', UMAMI_ID);
   document.head.appendChild(s);
