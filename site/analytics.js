@@ -9,7 +9,7 @@
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href]'); if (!a || !window.umami) return;
     var h = a.getAttribute('href') || '', n = '';
-    if (h.indexOf('dvor.odoo.com') >= 0 || /(^|\/)prenota\.html/.test(h)) n = 'prenota';
+    if (h.indexOf('prenota.osteriadvor.com') >= 0 || h.indexOf('dvor.odoo.com') >= 0 || /(^|\/)prenota\.html/.test(h)) n = 'prenota';
     else if (h.indexOf('tel:') === 0) n = 'telefono';
     else if (h.indexOf('wa.me') >= 0) n = 'whatsapp';
     else if (h.indexOf('mailto:') === 0) n = 'email';

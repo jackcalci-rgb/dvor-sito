@@ -451,7 +451,7 @@ function cd(d){var n=dd(d);return n===0?T('today'):n===1?T('tomorrow'):T('days')
 document.addEventListener('load',function(e){var i=e.target;if(i&&i.classList&&i.classList.contains('evimg')&&i.naturalWidth/i.naturalHeight>1.6)i.classList.add('wide')},true);
 function upf(f){return String(f).indexOf('/')>=0?f:'uploads/'+f}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
-var BOOK='https://dvor.odoo.com/book/prenotazione-dvor';
+var BOOK='https://prenota.osteriadvor.com/';
 function bookHref(r){return r.link||BOOK}
 function lightbox(src){var b=el('div','evlb');var i=document.createElement('img');i.src=src;i.alt='';b.appendChild(i);function c(){b.remove();document.removeEventListener('keydown',k)}function k(e){if(e.key==='Escape')c()}b.addEventListener('click',c);document.addEventListener('keydown',k);document.body.appendChild(b)}
 function menuBtn(r){if(!r.menu)return null;var a=el('a','btn',T('menu'));a.href=upf(r.menu);
