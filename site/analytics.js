@@ -1,3 +1,24 @@
+/* Umami (statistiche senza cookie, non serve il consenso). Per attivarlo basta incollare qui sotto il
+   "Website ID" che si trova nel pannello di Umami. Se vuoto, non succede nulla. */
+(function () {
+  var UMAMI_ID = '', UMAMI_SRC = 'https://cloud.umami.is/script.js';
+  if (!UMAMI_ID) return;
+  var s = document.createElement('script'); s.defer = true; s.src = UMAMI_SRC; s.setAttribute('data-website-id', UMAMI_ID);
+  document.head.appendChild(s);
+  // eventi: clic su Prenota / Odoo, telefono, WhatsApp, email, scarico PDF
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]'); if (!a || !window.umami) return;
+    var h = a.getAttribute('href') || '', n = '';
+    if (h.indexOf('dvor.odoo.com') >= 0 || /(^|\/)prenota\.html/.test(h)) n = 'prenota';
+    else if (h.indexOf('tel:') === 0) n = 'telefono';
+    else if (h.indexOf('wa.me') >= 0) n = 'whatsapp';
+    else if (h.indexOf('mailto:') === 0) n = 'email';
+    else if (/\.pdf($|\?)/i.test(h)) n = 'pdf';
+    else if (/(^|\/)preventivo\.html/.test(h)) n = 'preventivo';
+    if (n) window.umami.track(n, { link: h.slice(0, 80) });
+  }, true);
+})();
+
 /* Google Analytics 4 con Consent Mode v2 (GDPR): cookie e dati personali SOLO se l'ospite accetta.
    Per cambiare ID basta modificare la riga GA_ID. Se vuoto, nessun banner e nessun tracciamento. */
 (function () {
