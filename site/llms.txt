@@ -1,0 +1,29 @@
+# Osteria Enoteca Dvor
+
+> Osteria enoteca a San Floriano del Collio (Gorizia, Friuli Venezia Giulia, Italia), nel cuore del Collio. Cucina tipica di confine e friulana, ampia selezione di vini del Collio italiano e sloveno, giardino con griglia alla brace in primavera ed estate, edificio storico in pietra e legno.
+> Osteria and wine bar in San Floriano del Collio (Gorizia, Italy), in the heart of the Collio wine region. Border and Friulian cuisine, a wide selection of Italian and Slovenian Collio wines, garden grill in spring and summer, historic stone-and-wood building.
+
+Lingue del sito / Site languages: italiano, English, Deutsch, slovenščina, Nederlands (selettore in alto a destra).
+
+## Informazioni pratiche / Key facts
+- Indirizzo / Address: Via Castello 5, 34070 San Floriano del Collio (GO), Italia
+- Orari / Hours: lunedì, martedì, venerdì–domenica 11:00–22:00; chiuso mercoledì e giovedì / Mon, Tue, Fri–Sun 11:00–22:00; closed Wed and Thu
+- Telefono / Phone: +39 0481 090740
+- WhatsApp: +39 392 388 3900
+- Email: info@osteriadvor.com
+- Prenotazione consigliata / Booking recommended: https://prenota.osteriadvor.com/
+- Gestione / Operator: Horeca FVG Srl, P.IVA 01280650316
+
+## Pagine principali / Main pages
+- [Home](https://www.osteriadvor.com/): storia, ambienti, orari, domande frequenti, contatti
+- [Menù](https://www.osteriadvor.com/menu.html): antipasti, primi, secondi, contorni e dolci di cucina friulana e di confine
+- [Carta vini](https://www.osteriadvor.com/vini.html): vini del Collio (Italia e Slovenia), bollicine, bianchi, rossi, amari premium, con abbinamenti
+- [Prenota un tavolo](https://www.osteriadvor.com/prenota.html): prenotazione online
+- [Eventi](https://www.osteriadvor.com/eventi.html): serate speciali e appuntamenti a tema
+- [Servizi](https://www.osteriadvor.com/servizi.html): cene aziendali, feste private, comunioni e battesimi, colazioni e brunch
+- [Galleria](https://www.osteriadvor.com/galleria.html): foto delle sale, del giardino e del panorama
+- [Selezioni vini FVG](https://www.osteriadvor.com/selezioni-vini-fvg.html): schede dei vini selezionati
+
+## Note
+- Il contenuto del sito è presente in tutte e cinque le lingue nello stesso documento HTML.
+- Per orari e disponibilità aggiornati (festività, eventi) fa fede la pagina Eventi o il contatto diretto.
