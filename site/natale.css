@@ -54,3 +54,10 @@
 .nt-tot{font-weight:600;font-size:1.1rem}
 .nt-how p{margin:0;font-size:.95rem;line-height:1.55}
 @media(max-width:860px){.nt-grid{grid-template-columns:1fr}.nt-side{position:static;order:-1}.nt-pks,.nt-two{grid-template-columns:1fr}}
+/* Galleria eventi aziendali */
+.evgal{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.evgal img,.evgal video{width:100%;height:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--alt)}
+.evgal video{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+@media(max-width:860px){.evgal{grid-template-columns:repeat(2,1fr)}}
+.evgal img:nth-last-child(-n+2){grid-column:span 2;aspect-ratio:4/3;object-position:50% 45%}
+@media(max-width:860px){.evgal video{grid-column:span 2;grid-row:auto;aspect-ratio:4/5}.evgal img:nth-last-child(-n+2){grid-column:span 1;aspect-ratio:3/4}}
