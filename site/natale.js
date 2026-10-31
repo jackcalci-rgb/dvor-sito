@@ -50,7 +50,7 @@
       '<div class="nt-two">' +
       fld('name', 'text', T('Nome e cognome', 'Full name', 'Name', 'Ime in priimek', 'Naam'), 'name', true) + fld('company', 'text', T('Azienda', 'Company', 'Firma', 'Podjetje', 'Bedrijf'), 'organization') +
       fld('email', 'email', 'Email', 'email', true) + fld('phone', 'tel', T('Telefono', 'Phone', 'Telefon', 'Telefon', 'Telefoon'), 'tel', true) +
-      fld('date', 'text', T('Data desiderata', 'Preferred date', 'Wunschtermin', 'Želeni datum', 'Gewenste datum'), 'off') + '</div>' +
+      fld('date', 'date', T('Data desiderata', 'Preferred date', 'Wunschtermin', 'Želeni datum', 'Gewenste datum'), 'off') + fld('time', 'time', T('Orario di inizio', 'Start time', 'Beginn', 'Začetek', 'Starttijd'), 'off') + '</div>' +
       '<label class="nt-f"><span>' + T('Note, allergie o intolleranze', 'Notes, allergies or intolerances', 'Anmerkungen, Allergien oder Unverträglichkeiten', 'Opombe, alergije ali intolerance', 'Opmerkingen, allergieën of intoleranties') + '</span><textarea name="notes" rows="3"></textarea></label>' +
       '<label class="nt-chk"><input type="checkbox" name="consent"><span>' + T('Acconsento al trattamento dei dati per rispondere alla richiesta (<a href="privacy.html">privacy</a>) e all’invio di una copia del preventivo a Osteria Enoteca Dvor.', 'I agree to my data being processed to answer this request (<a href="privacy.html">privacy</a>) and to a copy of the quote being sent to Osteria Enoteca Dvor.', 'Ich willige in die Verarbeitung meiner Daten zur Beantwortung der Anfrage (<a href="privacy.html">Datenschutz</a>) und in den Versand einer Kopie des Angebots an Osteria Enoteca Dvor ein.', 'Soglašam z obdelavo podatkov za odgovor na povpraševanje (<a href="privacy.html">zasebnost</a>) in s pošiljanjem kopije ponudbe Osteria Enoteca Dvor.', 'Ik ga akkoord met de verwerking van mijn gegevens om de aanvraag te beantwoorden (<a href="privacy.html">privacy</a>) en met het verzenden van een kopie van de offerte aan Osteria Enoteca Dvor.') + '</span></label>' +
       '<p class="nt-msg nt-err" hidden>' + T('Compila nome, email, telefono e consenso.', 'Please fill in name, email, phone and consent.', 'Bitte Name, E-Mail, Telefon und Einwilligung ausfüllen.', 'Izpolnite ime, e-pošto, telefon in soglasje.', 'Vul naam, e-mail, telefoon en toestemming in.') + '</p>' +
@@ -63,7 +63,7 @@
       '<div class="nt-box nt-how"><h3>' + T('Come confermare', 'How to confirm', 'So bestätigen Sie', 'Kako potrditi', 'Zo bevestig je') + '</h3><p>' + T('Chiamaci al', 'Call us on', 'Rufen Sie uns an unter', 'Pokličite nas na', 'Bel ons op') + ' <a href="tel:+390481090740">' + PHONE + '</a> ' + T('oppure scrivi a', 'or write to', 'oder schreiben Sie an', 'ali pišite na', 'of mail naar') + ' <a href="mailto:' + MAIL + '">' + MAIL + '</a>, ' + T('allegando il preventivo o indicandoci il numero del preventivo.', 'attaching the quote or giving us the quote number.', 'mit dem Angebot im Anhang oder unter Angabe der Angebotsnummer.', 's priloženo ponudbo ali navedbo številke ponudbe.', 'met de offerte als bijlage of onder vermelding van het offertenummer.') + '</p></div></aside></div>';
   }
   function fld(n, type, label, ac, req) {
-    return '<label class="nt-f"><span>' + label + (req ? ' *' : '') + '</span><input name="' + n + '" type="' + type + '" autocomplete="' + ac + '"' + (n === 'date' ? ' placeholder="gg/mm/aaaa"' : '') + '></label>';
+    return '<label class="nt-f"><span>' + label + (req ? ' *' : '') + '</span><input name="' + n + '" type="' + type + '" autocomplete="' + ac + '"' + '' + '></label>';
   }
 
   function dishes() {
@@ -83,20 +83,29 @@
 
   function calc() {
     var ad = num(root.querySelector('#nt-ad').value, MIN_ADULTS, 200), kd = num(root.querySelector('#nt-kd').value, 0, 100);
-    var m = D[st.pkg], base = PRICE[st.pkg], sup = 0, sel = [];
-    COURSES.forEach(function (c) { var d = m[c][st.pick[st.pkg + c] || 0]; sel.push({ c: c, d: d }); sup += d[1]; });
-    var per = base + sup, tot = per * ad + kd * KIDS, btl = Math.ceil(ad * GLASSES / 10);
-    return { ad: ad, kd: kd, base: base, sup: sup, per: per, tot: tot, dep: Math.round(tot * DEPOSIT * 100) / 100, btl: btl, wine: st.pkg === 'e' ? btl * WINE_BTL : 0, sel: sel };
+    var m = D[st.pkg], base = PRICE[st.pkg], supp = 0, sel = [];
+    COURSES.forEach(function (c) { var d = m[c][st.pick[st.pkg + c] || 0]; sel.push({ c: c, d: d }); supp += d[1]; });
+    var food = base * ad + kd * KIDS, sup = supp * ad, btl = 0, wines = [], vini = 0;
+    if (st.pkg === 'e') {
+      /* vino del Collio: 4 calici a testa, bottiglie da 1 litro = 10 calici; bianchi e rossi a meta' (come nel programma preventivi) */
+      btl = Math.ceil(ad * GLASSES / 10);
+      var w = Math.round(btl / 2), r = btl - w;
+      wines = [['Blaževi Goriška Brda Merlot', Math.floor(r / 2) + (r % 2)], ['Blaževi Goriška Brda Refošk', Math.floor(r / 2)], ['Blaževi Goriška Brda Sivi Pinot', w]];
+      vini = btl * WINE_BTL;
+    }
+    var tot = Math.round((food + sup + vini) * 100) / 100;
+    return { ad: ad, kd: kd, base: base, supp: supp, sup: sup, food: food, per: base + supp, tot: tot, dep: Math.round(tot * DEPOSIT * 100) / 100, btl: btl, wines: wines, vini: vini, wine: vini, sel: sel };
   }
   function summary() {
     var c = calc(), h = '<h3>' + T('Il tuo preventivo', 'Your quote', 'Ihr Angebot', 'Vaša ponudba', 'Je offerte') + '</h3><dl>' +
       '<div><dt>' + (st.pkg === 'e' ? 'Essential' : 'Premium') + ' · ' + c.ad + ' × ' + eur(c.base) + '</dt><dd>' + eur(c.base * c.ad) + '</dd></div>';
     if (c.sup) h += '<div><dt>' + T('Supplementi', 'Supplements', 'Zuschläge', 'Doplačila', 'Toeslagen') + ' · ' + c.ad + ' × ' + eur(c.sup) + '</dt><dd>' + eur(c.sup * c.ad) + '</dd></div>';
     if (c.kd) h += '<div><dt>' + T('Bambini', 'Children', 'Kinder', 'Otroci', 'Kinderen') + ' · ' + c.kd + ' × ' + eur(KIDS) + '</dt><dd>' + eur(c.kd * KIDS) + '</dd></div>';
+    if (c.vini) h += '<div><dt>' + T('Vino del Collio', 'Collio wine', 'Collio-Wein', 'Vino iz Collia', 'Collio-wijn') + ' · ' + c.btl + ' × ' + eur(WINE_BTL) + '</dt><dd>' + eur(c.vini) + '</dd></div>';
     h += '<div class="nt-tot"><dt>' + T('Totale', 'Total', 'Gesamt', 'Skupaj', 'Totaal') + '</dt><dd>' + eur(c.tot) + '</dd></div>' +
       '<div><dt>' + T('Acconto alla conferma (50%)', 'Deposit on confirmation (50%)', 'Anzahlung bei Bestätigung (50%)', 'Akontacija ob potrditvi (50 %)', 'Aanbetaling bij bevestiging (50%)') + '</dt><dd>' + eur(c.dep) + '</dd></div></dl>';
     h += '<p class="nt-note">' + (st.pkg === 'e'
-      ? T('Vino del Collio a consumo, consigliate ' + c.btl + ' bottiglie (circa ' + eur(c.wine) + ', non incluse nel totale).', 'Collio wine by consumption, ' + c.btl + ' bottles recommended (about ' + eur(c.wine) + ', not included in the total).', 'Collio-Wein nach Verbrauch, empfohlen ' + c.btl + ' Flaschen (ca. ' + eur(c.wine) + ', nicht im Gesamtbetrag).', 'Vino iz Collia po porabi, priporočenih ' + c.btl + ' steklenic (približno ' + eur(c.wine) + ', niso všteta v skupni znesek).', 'Collio-wijn naar verbruik, ' + c.btl + ' flessen aanbevolen (circa ' + eur(c.wine) + ', niet in het totaal).')
+      ? T('Vino a consumo: ' + c.btl + ' bottiglie da 1 litro consigliate (4 calici a persona); nel conto finale solo il vino effettivamente bevuto.', 'Wine by consumption: ' + c.btl + ' one-litre bottles recommended (4 glasses per person); the final bill only includes the wine actually drunk.', 'Wein nach Verbrauch: empfohlen ' + c.btl + ' Ein-Liter-Flaschen (4 Gläser pro Person); abgerechnet wird nur der tatsächlich getrunkene Wein.', 'Vino po porabi: priporočenih ' + c.btl + ' enolitrskih steklenic (4 kozarci na osebo); v končnem računu samo dejansko popito vino.', 'Wijn naar verbruik: ' + c.btl + ' flessen van 1 liter aanbevolen (4 glazen per persoon); op de eindrekening alleen de werkelijk gedronken wijn.')
       : T('I vini si scelgono con la nostra sommelier e si pagano a consumo.', 'Wines are chosen with our sommelier and charged on consumption.', 'Die Weine wählen Sie mit unserer Sommelière; Abrechnung nach Verbrauch.', 'Vina izberete s sommelierko; plačilo po porabi.', 'De wijnen kies je met onze sommelier; afrekening naar verbruik.')) +
       ' ' + T('Pane incluso; caffè, acqua e altre bevande a parte.', 'Bread included; coffee, water and other drinks extra.', 'Brot inklusive; Kaffee, Wasser und andere Getränke extra.', 'Kruh je vključen; kava, voda in druge pijače posebej.', 'Brood inbegrepen; koffie, water en andere dranken apart.') + '</p>';
     root.querySelector('#nt-sum').innerHTML = h;
@@ -167,17 +176,129 @@
     return doc;
   }
 
+
+  /* ---------- PDF con il modello del programma preventivi (pagine HTML -> immagini -> PDF) ---------- */
+  var FONTS = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap';
+  var DLEAF = '<svg class="leaf" viewBox="0 0 16 16" role="img"><path d="M14 2C7 2 2.5 5.5 2.5 10.5c0 1.2.3 2.3.8 3.2C5 9.8 7.8 7.4 11 6c-2.8 1.8-5.2 4.6-6.6 8 1 .5 2 .7 3.1.7C12.6 14.7 14 9 14 2z" fill="#3f8f3a"/></svg>';
+  var HOLLY = '<svg class="holly" viewBox="0 0 64 22" aria-hidden="true"><path d="M31 12C26 4 17 3 9 7c3 1 4 3 3 5 3-1 5 0 6 2 2-2 5-2 7-1-1-3 1-4 6-1z" fill="#2f6b3a"/><path d="M33 12c5-8 14-9 22-5-3 1-4 3-3 5-3-1-5 0-6 2-2-2-5-2-7-1 1-3-1-4-6-1z" fill="#3f8f4a"/><circle cx="29.5" cy="14.5" r="3" fill="#c8432c"/><circle cx="34.5" cy="14.5" r="3" fill="#c8432c"/><circle cx="32" cy="10.2" r="3" fill="#b03424"/></svg>';
+  var MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+  var DL = {
+    it: { tel: 'Tel.', cliente: 'Cliente', numero: 'Numero preventivo', data: 'Data', oggetto: 'Oggetto Preventivo', dataEvento: 'Data Evento', inizio: 'Inizio evento: ore', adulti: 'Quantità adulti', bambini: 'Quantità bambini', opzione: 'Opzione:',
+      opt: 'Antipasto, primo, secondo e dolce', cour: { antipasti: 'Antipasti', primi: 'Primi', secondi: 'Secondi', dessert: 'Dessert' }, leg: 'Piatto vegetariano', legS: 'maggiorazione a persona',
+      bott: 'Bottiglie', cal: 'Calici', vino: 'Vino del Collio', litro: 'Bottiglia da 1 litro', sugg: 'Consigliati 4 calici a persona', cons: 'Quantità consigliata, conteggiata a consumo: nel conto finale solo il vino effettivamente bevuto.',
+      wines: 'Vini', somm: 'Per la selezione dei vini ci sarà la nostra sommelier a guidarvi negli abbinamenti con il menu. Per farvi già un’idea potete consultare la nostra carta dei vini sul sito:',
+      food: 'Prezzo food', vini: 'Prezzo vini', totale: 'Prezzo Totale', finale: 'Prezzo finale preventivo', acconto: 'Acconto', suppl: function (e) { return 'Supplemento piatti scelti (+' + e + ' € a persona)'; },
+      termini: 'Termini & Condizioni', allergie: 'Allergie e Preferenze Alimentari', firma: 'Cliente', auguri: 'Con i migliori auguri di Buone Feste da tutta l\'Osteria Dvor', al: 'Allergeni', alSub: 'Reg. (UE) n. 1169/2011, Allegato II', piatto: 'Piatto',
+      note: ['Il personale di sala è a disposizione per ogni informazione sugli ingredienti e sugli allergeni.', 'In cucina si utilizzano tutti gli allergeni elencati: non si può escludere la presenza di tracce per contaminazione crociata.', 'Ai sensi del Reg. (UE) n. 1169/2011 e del D.Lgs. n. 231/2017.'],
+      ogg: ['Pranzo aziendale di Natale', 'Cena aziendale di Natale'] },
+    en: { tel: 'Phone:', cliente: 'Customer', numero: 'Quotation Number', data: 'Date', oggetto: 'Subject of Quotation', dataEvento: 'Date Event', inizio: 'Start time:', adulti: 'Adults', bambini: 'Kids', opzione: 'Price Option (pp):',
+      opt: 'Starter, first course, main course and dessert', cour: { antipasti: 'Starters', primi: 'First courses', secondi: 'Main courses', dessert: 'Dessert' }, leg: 'Vegetarian dish', legS: 'supplement per person',
+      bott: 'Bottles', cal: 'Glasses', vino: 'Collio Wines', litro: '1-liter bottle', sugg: 'Recommended: 4 glasses per person', cons: 'Recommended quantity, charged on consumption: the final bill will only include the wine actually drunk.',
+      wines: 'Wines', somm: 'Our sommelier will guide you in choosing the wines to pair with your menu. To get an idea already, you can browse our wine list on our website:',
+      food: 'Food price', vini: 'Drinks price', totale: 'Total Price', finale: 'Final Price Quote', acconto: 'Deposit', suppl: function (e) { return 'Supplement for chosen dishes (+' + e + ' € per person)'; },
+      termini: 'Terms & Conditions', allergie: 'Allergies and Dietary Preferences', firma: 'Client', auguri: 'Season\'s Greetings from all of us at Osteria Dvor', al: 'Allergens', alSub: 'Reg. (EU) No. 1169/2011, Annex II', piatto: 'Dish',
+      note: ['Our staff are available for any information about ingredients and allergens.', 'All the allergens listed are used in our kitchen: traces due to cross-contamination cannot be ruled out.', 'Pursuant to Reg. (EU) No. 1169/2011 and Legislative Decree No. 231/2017.'],
+      ogg: ['Corporate Christmas lunch', 'Corporate Christmas dinner'] } };
+  function ep(n) { return n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function dateLong(iso, l) {
+    if (!iso) return ''; var a = iso.split('-').map(Number); if (a.length < 3 || !a[0]) return '';
+    if (l === 'it') return a[2] + ' ' + MESI[a[1] - 1] + ' ' + a[0];
+    return new Date(a[0], a[1] - 1, a[2]).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  function paras(t) { return String(t || '').split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean); }
+  function docHtml(f, c, no, l) {
+    var T = DL[l], AL = l === 'it' ? AL_IT : AL_EN, base = new URL('.', location.href).href;
+    function item(d) { return '<div>' + esc(d[0]) + (d[2] ? DLEAF : '') + (d[1] ? '<span class="d-suppl">+' + d[1] + ' €</span>' : '') + '</div>'; }
+    function sec(x) { return '<div class="d-sec"><div class="k">' + T.cour[x.c] + '</div><div class="d-items">' + item(x.d) + '</div></div>'; }
+    var by = {}; c.sel.forEach(function (x) { by[x.c] = x; });
+    var menu = sec(by.antipasti) + '<div class="d-pair">' + sec(by.primi) + sec(by.secondi) + '</div>' + sec(by.dessert);
+    var hasV = c.sel.some(function (x) { return x.d[2]; }), hasS = c.sel.some(function (x) { return x.d[1]; });
+    var legend = (hasV || hasS) ? '<div class="d-legend">' + (hasV ? '<span>' + DLEAF + ' ' + T.leg + '</span>' : '') + (hasS ? '<span><b class="d-suppl" style="margin:0 3px 0 0">+' + c.sel.filter(function (x) { return x.d[1]; }).map(function (x) { return x.d[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' / ') + ' €</b> ' + T.legS + '</span>' : '') + '</div>' : '';
+    var wine = '';
+    if (st.pkg === 'e') {
+      var tc = c.wines.reduce(function (a, w) { return a + w[1] * 10; }, 0);
+      wine = '<div class="d-wine"><div class="k">' + T.vino + ':</div><div class="d-wnote">' + T.litro + ' · ' + T.sugg + '</div><table class="tbl"><tr class="h"><td></td><td class="c">' + T.bott + '</td><td class="c">' + T.cal + '</td></tr>' +
+        c.wines.map(function (w) { return '<tr><td style="width:250px;white-space:nowrap">' + esc(w[0]) + '</td><td class="c" style="width:70px">' + w[1] + '</td><td class="c" style="width:90px">' + w[1] * 10 + '</td></tr>'; }).join('') +
+        '<tr class="t"><td></td><td class="c">' + c.btl + '</td><td class="c">' + tc + '</td></tr><tr class="p"><td></td><td class="c">€</td><td class="c">' + ep(c.vini) + '</td></tr></table><div class="d-wnote" style="margin-top:4px">' + T.cons + '</div></div>';
+    } else {
+      wine = '<div class="d-wine"><div class="k">' + T.wines + '</div><div class="d-wnote" style="font-size:11px;max-width:470px">' + esc(T.somm) + ' <span style="font-style:normal;color:#c8432c">osteriadvor.com/vini.html</span></div></div>';
+    }
+    var rows = [];
+    if (c.vini > 0) { rows.push([T.food, c.food, '']); if (c.sup) rows.push([T.suppl(String(c.supp)), c.sup, '']); rows.push([T.vini, c.vini, '']); rows.push([T.totale, c.tot, 'strong']); }
+    else { if (c.sup) { rows.push([T.food, c.food, '']); rows.push([T.suppl(String(c.supp)), c.sup, '']); } rows.push([T.finale, c.tot, 'strong']); }
+    rows.push([T.acconto, c.dep, 'acc']);
+    var tot = rows.map(function (r) { return '<tr class="' + r[2] + '"><td class="l">' + esc(r[0]) + '</td><td class="r">' + ep(r[1]) + ' €</td></tr>'; }).join('');
+    var tt = DOC_TERMS[l] || DOC_TERMS.it;
+    var terms = paras(tt.terms).map(function (x, i) { return '<p class="' + (i ? '' : 'bold') + '">' + esc(x) + '</p>'; }).join('');
+    var allergie = paras(tt.allergie).map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('');
+    var frame = '<div class="frame" aria-hidden="true"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><i class="b"></i></div>';
+    var d = new Date(), today = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    var altbl = '<tr><th style="text-align:left">' + T.piatto + '</th>' + AL.map(function (n) { return '<th class="al"><span>' + n + '</span></th>'; }).join('') + '</tr>' +
+      COURSES.map(function (k) { var x = by[k]; return '<tr class="g"><td colspan="15">' + T.cour[k] + '</td></tr><tr><td class="n">' + esc(x.d[0]) + '</td>' + AL.map(function (_, i) { return '<td>' + (x.d[3].indexOf(i) >= 0 ? '<i class="dot"></i>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
+    var body = '<div class="page p1">' + frame +
+      '<div class="d-logo-row"><div class="d-brand"><img class="d-logo" src="images/pdf-logo.png" alt="DVOR"><div class="d-venue"><span>Via Castello 5</span><span>San Floriano del Collio</span><span>37070 Gorizia (Italia)</span></div></div><div class="d-addr d-company"><b>Horeca FVG Srl</b><span>P.IVA 01280650316</span><span>info@osteriadvor.com</span></div></div>' +
+      '<div class="d-holly">' + HOLLY + '</div>' +
+      '<div class="d-head"><div class="d-client"><span class="k2">' + T.cliente + '</span><b>' + (esc(f.name) || '&nbsp;') + '</b>' + (f.company ? '<div>' + esc(f.company) + '</div>' : '') + '<div>' + esc(f.email) + '</div>' + (f.phone ? '<div>' + T.tel + ' ' + esc(f.phone) + '</div>' : '') + '</div>' +
+      '<div class="d-meta"><span class="k">' + T.numero + '</span><span class="v">' + esc(no) + '</span><span class="k">' + T.data + '</span><span class="v">' + dateLong(today, l) + '</span></div></div>' +
+      '<div class="d-obj"><div><span class="k2">' + T.oggetto + '</span><b>' + T.ogg[f.kind ? 1 : 0] + '</b></div><div class="ev"><span class="k2">' + T.dataEvento + '</span><span class="v">' + (dateLong(f.dateIso, l) || '&nbsp;') + (f.time ? '<br>' + T.inizio + ' ' + esc(f.time) : '') + '</span></div></div>' +
+      '<div class="d-qty"><span>' + T.adulti + ': <b>' + c.ad + '</b></span>' + (c.kd ? '<span>' + T.bambini + ': <b>' + c.kd + '</b></span>' : '') + '</div>' +
+      '<div class="d-opts"><div class="d-opt"><span>' + T.opzione + '</span><span class="p">' + ep(c.base) + ' €</span><span class="l">' + T.opt + '</span></div></div>' +
+      '<div class="d-menu">' + menu + '</div>' + legend + '<div style="margin-top:26px">' + wine + '</div><table class="tbl d-tot">' + tot + '</table></div>' +
+      '<div class="page p2 fixed">' + frame + '<h3>' + T.termini + '</h3><div class="terms">' + terms + '</div><div class="terms allergy"><h3 style="margin:0 0 7px">' + T.allergie + '</h3>' + allergie + '</div><div class="d-xmas">' + T.auguri + '</div>' +
+      '<div class="sign"><div>Horeca FVG Srl<img src="images/pdf-firma.png" alt=""></div><div class="c">' + T.firma + '</div></div></div>' +
+      '<div class="page p3 fixed">' + frame + '<h3>' + T.al + '</h3><div class="a-sub">' + T.alSub + '</div><table class="a-tbl"><colgroup><col>' + AL.map(function () { return '<col style="width:24px">'; }).join('') + '</colgroup>' + altbl + '</table>' +
+      '<div class="d-holly" style="margin:18px auto 0">' + HOLLY + '</div><div class="a-note">' + T.note.map(function (x) { return '<p>' + x + '</p>'; }).join('') + '</div></div>';
+    return '<!doctype html><html lang="' + l + '"><head><meta charset="utf-8"><base href="' + base + '"><link rel="stylesheet" href="' + FONTS + '"><link rel="stylesheet" href="natale-doc.css"></head><body>' + body + '</body></html>';
+  }
+  var DOC_TERMS = (function () {
+    var t = D.terms || {}, o = {};
+    ['it', 'en'].forEach(function (k) {
+      if (!t[k]) return; var x = t[k].terms || '';
+      if (!/conteggiato a consumo|charged on consumption/i.test(x)) x += '\n\n' + (k === 'it' ? '-Il vino è conteggiato a consumo: la quantità indicata nel preventivo è quella consigliata. Se ne verrà bevuto meno, il conto finale riporterà solo il vino effettivamente consumato.' : '-Wine is charged on consumption: the quantity shown in the quotation is the recommended one. If less is drunk, the final bill will only include the wine actually consumed.');
+      o[k] = { terms: x, allergie: t[k].allergie };
+    });
+    return o;
+  })();
+  function loadScript(src) {
+    return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  }
+  function makeDocPdf(JsPDF, f, c, no) {
+    var l = lang() === 'it' ? 'it' : 'en', fr;
+    return (window.html2canvas ? Promise.resolve() : loadScript('html2canvas.min.js')).then(function () {
+      fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.style.cssText = 'position:fixed;left:-12000px;top:0;width:794px;height:1200px;border:0;visibility:hidden';
+      document.body.appendChild(fr);
+      return new Promise(function (res, rej) { fr.onload = res; fr.onerror = rej; fr.srcdoc = docHtml(f, c, no, l); });
+    }).then(function () {
+      var w = fr.contentWindow, doc = fr.contentDocument;
+      var fonts = ['700 17px "Cormorant Garamond"', '600 11px "Cormorant Garamond"', '400 12px "Source Serif 4"', 'italic 400 12px "Source Serif 4"', '600 9px "Source Sans 3"', '700 9px "Source Sans 3"'];
+      var imgs = Array.prototype.map.call(doc.images, function (i) { return i.complete ? 1 : new Promise(function (r) { i.onload = i.onerror = r; }); });
+      return Promise.all(fonts.map(function (x) { return doc.fonts.load(x).catch(function () {}); }).concat(imgs)).then(function () { return doc.fonts.ready; }).then(function () {
+        var p1 = doc.querySelector('.p1');
+        ['compact', 'compact2', 'compact3'].forEach(function (k) { if (p1.scrollHeight > 1124) p1.classList.add(k); });
+        var pages = doc.querySelectorAll('.page'), pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }), chain = Promise.resolve();
+        Array.prototype.forEach.call(pages, function (pg, i) {
+          chain = chain.then(function () { return w.html2canvas ? w.html2canvas(pg, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false }) : window.html2canvas(pg, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false }); }).then(function (cv) {
+            var ratio = cv.height / cv.width, ww = 210, hh = 210 * ratio; if (hh > 297) { hh = 297; ww = 297 / ratio; }
+            if (i) pdf.addPage(); pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', (210 - ww) / 2, 0, ww, hh);
+          });
+        });
+        return chain.then(function () { pdf.setProperties({ title: 'Preventivo ' + no + ' - ' + f.name, author: 'Horeca FVG Srl - Osteria Dvor' }); fr.remove(); return pdf; });
+      });
+    }).catch(function (e) { if (fr) fr.remove(); throw e; });
+  }
+
   function submit(e) {
     e.preventDefault(); if (st.busy) return;
     var form = root.querySelector('#nt-form'), g = function (n) { return (form.elements[n].value || '').trim(); };
     var err = form.querySelector('.nt-err'), ok = form.querySelector('.nt-ok'), fail = form.querySelector('.nt-fail'), lib = form.querySelector('.nt-lib');
     var good = g('name') && /^\S+@\S+\.\S+$/.test(g('email')) && g('phone').length >= 6 && form.elements.consent.checked;
     err.hidden = !!good; ok.hidden = fail.hidden = true; if (!good) return;
-    var f = { name: g('name'), company: g('company'), email: g('email'), phone: g('phone'), date: g('date'), notes: g('notes'), kind: +root.querySelector('input[name=nt-kind]:checked').value };
+    var di = g('date'), f = { name: g('name'), company: g('company'), email: g('email'), phone: g('phone'), dateIso: di, time: g('time'), date: di ? di.split('-').reverse().join('/') + (g('time') ? ' ' + g('time') : '') : '', notes: g('notes'), kind: +root.querySelector('input[name=nt-kind]:checked').value };
     var c = calc(), no = quoteNumber(), btn = form.querySelector('button[type=submit]');
     st.busy = true; btn.disabled = true; lib.hidden = false;
     loadPdf().then(function (JsPDF) {
-      var doc = makePdf(JsPDF, f, c, no), blob = doc.output('blob');
+      return makeDocPdf(JsPDF, f, c, no).catch(function () { return makePdf(JsPDF, f, c, no); }).then(function (doc) {
+      var blob = doc.output('blob');
       doc.save('Preventivo-Dvor-' + no + '.pdf');
       var fd = new FormData();
       ['name', 'company', 'email', 'phone', 'date', 'notes'].forEach(function (k) { fd.append(k, f[k]); });
@@ -187,6 +308,7 @@
       fd.append('website', form.elements.website.value); fd.append('t', String(t0));
       fd.append('pdf', blob, 'Preventivo-Dvor-' + no + '.pdf');
       return fetch('natale-mail.php', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+      });
     }).then(function (j) { if (j && j.ok) ok.hidden = false; else fail.hidden = false; })
       .catch(function () { fail.hidden = false; })
       .then(function () { st.busy = false; btn.disabled = false; lib.hidden = true; });
