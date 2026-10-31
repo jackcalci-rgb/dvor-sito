@@ -75,18 +75,34 @@ $text .= "\nRICHIESTA\nPacchetto: {$f['package']}\nPranzo/Cena: {$f['kind']}\nAd
 if ($notes !== '') $text .= "\nNote del cliente:\n$notes\n";
 $text .= "\nLingua del sito: " . strtoupper($f['lang']) . "\nIl preventivo in PDF e' allegato.\n";
 
-$b = '=_dvor_' . bin2hex(random_bytes(8));
 $fname = 'Preventivo-Dvor-' . $f['number'] . '.pdf';
-$hdr  = 'From: =?UTF-8?B?' . base64_encode($cfg['site_name']) . "?= <{$cfg['mail_from']}>\r\nReply-To: {$f['email']}\r\n";
-$hdr .= 'Subject: =?UTF-8?B?' . base64_encode($subject) . "?=\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"$b\"";
-$body  = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($text)) . "\r\n";
-$body .= "--$b\r\nContent-Type: application/pdf; name=\"$fname\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"$fname\"\r\n\r\n" . chunk_split(base64_encode($pdf)) . "\r\n--$b--";
 
-if (!empty($cfg['smtp_host'])) {
-    $ok = smtp_raw($cfg, $to, $cfg['mail_from'], $hdr, $body);
-} else {
+// Costruisce un'email MIME con il PDF allegato e la spedisce (SMTP se configurato, altrimenti mail()).
+function send_with_pdf(array $cfg, string $to, string $subject, string $text, string $replyTo, string $pdf, string $fname): bool {
+    $b = '=_dvor_' . bin2hex(random_bytes(8));
+    $hdr  = 'From: =?UTF-8?B?' . base64_encode($cfg['site_name']) . "?= <{$cfg['mail_from']}>\r\nReply-To: $replyTo\r\n";
+    $hdr .= 'Subject: =?UTF-8?B?' . base64_encode($subject) . "?=\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"$b\"";
+    $body  = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($text)) . "\r\n";
+    $body .= "--$b\r\nContent-Type: application/pdf; name=\"$fname\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"$fname\"\r\n\r\n" . chunk_split(base64_encode($pdf)) . "\r\n--$b--";
+    if (!empty($cfg['smtp_host'])) return smtp_raw($cfg, $to, $cfg['mail_from'], $hdr, $body);
     $h2 = preg_replace('/^Subject:.*\r\n/m', '', $hdr);
-    $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, $h2, '-f' . $cfg['mail_from']);
-    if (!$ok) $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, $h2);
+    $enc = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    return @mail($to, $enc, $body, $h2, '-f' . $cfg['mail_from']) || @mail($to, $enc, $body, $h2);
+}
+
+$ok = send_with_pdf($cfg, $to, $subject, $text, $f['email'], $pdf, $fname);
+
+// Copia al cliente (solo se la copia a info@ e' partita; un eventuale errore qui non blocca nulla)
+if ($ok) {
+    $tr = [
+        'it' => ['Il tuo preventivo - Osteria Enoteca Dvor', "Gentile {n},\n\nin allegato trovi il preventivo n. {no} per il pranzo/cena aziendale di Natale.\n\nPer confermare chiamaci al +39 0481 090740 oppure scrivi a info@osteriadvor.com allegando il preventivo o indicando il numero del preventivo.\n\nA presto,\nOsteria Enoteca Dvor"],
+        'en' => ['Your quote - Osteria Enoteca Dvor', "Dear {n},\n\nplease find attached quote no. {no} for your corporate Christmas lunch/dinner.\n\nTo confirm, call us on +39 0481 090740 or write to info@osteriadvor.com attaching the quote or giving the quote number.\n\nKind regards,\nOsteria Enoteca Dvor"],
+        'de' => ['Ihr Angebot - Osteria Enoteca Dvor', "Guten Tag {n},\n\nim Anhang finden Sie das Angebot Nr. {no} fuer Ihr Weihnachtsessen.\n\nZur Bestaetigung rufen Sie uns an unter +39 0481 090740 oder schreiben Sie an info@osteriadvor.com, mit dem Angebot im Anhang oder unter Angabe der Angebotsnummer.\n\nFreundliche Gruesse,\nOsteria Enoteca Dvor"],
+        'sl' => ['Vasa ponudba - Osteria Enoteca Dvor', "Spostovani {n},\n\nv prilogi je ponudba st. {no} za vase bozicno poslovno kosilo/vecerjo.\n\nZa potrditev nas pokliccite na +39 0481 090740 ali pisite na info@osteriadvor.com s priloceno ponudbo ali navedbo stevilke ponudbe.\n\nLep pozdrav,\nOsteria Enoteca Dvor"],
+        'nl' => ['Uw offerte - Osteria Enoteca Dvor', "Beste {n},\n\nin de bijlage vindt u offerte nr. {no} voor uw zakelijke kerstlunch/-diner.\n\nBel ons voor bevestiging op +39 0481 090740 of mail naar info@osteriadvor.com met de offerte als bijlage of onder vermelding van het offertenummer.\n\nMet vriendelijke groet,\nOsteria Enoteca Dvor"],
+    ];
+    $l = $tr[$f['lang']] ?? $tr['it'];
+    $ctext = str_replace(['{n}', '{no}'], [$f['name'], $f['number']], $l[1]);
+    send_with_pdf($cfg, $f['email'], $l[0], $ctext, $cfg['mail_to_info'], $pdf, $fname);
 }
 out($ok ? 200 : 500, ['ok' => (bool)$ok, 'error' => $ok ? null : 'mail']);
