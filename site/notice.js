@@ -33,6 +33,7 @@
   function spark(x, y, d, dl) { return '<path class="sp" style="animation-duration:' + d + 's;animation-delay:' + dl + 's;transform-origin:' + x + 'px ' + y + 'px" d="M' + x + ' ' + (y - 5) + 'l1.2 3.8 3.8 1.2-3.8 1.2-1.2 3.8-1.2-3.8-3.8-1.2 3.8-1.2z" fill="#FFF3C2"/>'; }
   var TOPC = '<svg viewBox="0 0 90 90" width="100" height="100">' + DEFS + '<path d="M-2 40C14 38 30 22 42 -2L52 -2C38 26 20 46 -2 50z" fill="url(#dvg)"/><path d="M-2 40C14 38 30 22 42 -2" stroke="#8E6A24" stroke-width=".8" fill="none"/><path d="M-2 62C22 58 48 36 64 -2L70 -2C56 40 26 68 -2 70z" fill="url(#dvg)" opacity=".85"/><path d="M42 0v31M68 0v15" stroke="#C9A24B" stroke-width="1"/>' + bauble(42, 41, 10, 'dvr') + bauble(68, 23, 7, 'dvn') + spark(12, 54, 2.6, 0) + spark(78, 40, 3.1, -1) + spark(56, 12, 2.2, -.6) + '</svg>';
   var BOTC = '<svg viewBox="0 0 90 90" width="100" height="100">' + DEFS + '<path d="M-2 50C14 52 30 68 42 92L52 92C38 64 20 44 -2 40z" fill="url(#dvg)"/><path d="M-2 28C22 32 48 54 64 92L70 92C56 50 26 22 -2 20z" fill="url(#dvg)" opacity=".85"/>' + bauble(24, 70, 10, 'dvr') + bauble(52, 79, 7, 'dvn') + bauble(40, 56, 5, 'dvg') + spark(12, 36, 2.8, -.3) + spark(66, 62, 2.4, -1.2) + '</svg>';
+  var TREE = '<svg viewBox="0 0 40 64" width="100%" height="100%"><path d="M20 3l1.7 3.9 4.2.4-3.2 2.8 1 4.1L20 12l-3.7 2.2 1-4.1-3.2-2.8 4.2-.4z" fill="#E3C26A"/><path d="M20 10L11 24h5L8 37h6L5 52h30L26 37h6L24 24h5z" fill="#2F6B3F"/><path d="M20 10L11 24h5L8 37h6L5 52h30" fill="none" stroke="#1B4527" stroke-width="1"/><rect x="17.5" y="52" width="5" height="8" fill="#6B4423"/><path d="M11 24h5M8 37h6M5 52h30" stroke="#F6EFE4" stroke-width="1.4" opacity=".55"/><circle cx="17" cy="30" r="2" fill="#A42B20"/><circle cx="24" cy="42" r="2.2" fill="#E3C26A"/><circle cx="14" cy="46" r="2" fill="#A42B20"/><circle cx="21" cy="19" r="1.6" fill="#E3C26A"/><path class="sp" style="animation-duration:2.9s;transform-origin:30px 34px" d="M30 29l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" fill="#FFF3C2"/></svg>';
   var CSS = '#dvor-nt .nt-box{max-width:30rem;width:100%;max-height:calc(100vh - 2rem);overflow:auto;background:var(--bg,#F6EFE4);color:var(--ink,#2B1D14);box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;font:400 1rem/1.6 var(--sans,system-ui,sans-serif);border-top:4px solid var(--gold,#9C5A10)}'
     + '#dvor-nt .nt-in{margin:.65rem;border:1px solid var(--line,#D8C6AA);outline:1px solid var(--line,#D8C6AA);outline-offset:3px;padding:1.6rem 1.6rem 1.3rem;text-align:center;position:relative}'
     + '#dvor-nt .nt-sprig{display:block;margin:0 auto .5rem;width:120px;height:36px}'
@@ -47,8 +48,9 @@
     + '#dvor-nt .nt-x{position:absolute;top:.5rem;right:.5rem;background:var(--bg,#F6EFE4);border-radius:50%;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border:0;color:inherit;font-size:1.5rem;line-height:1;cursor:pointer;padding:0;z-index:3}'
     + '#dvor-nt .nt-c{position:absolute;z-index:2;pointer-events:none;line-height:0}#dvor-nt .nt-c svg{display:block;overflow:visible}#dvor-nt .nt-c.tl{top:0;left:0}#dvor-nt .nt-c.tr{top:0;right:0;transform:scaleX(-1)}#dvor-nt .nt-c.bl{bottom:0;left:0}#dvor-nt .nt-c.br{bottom:0;right:0;transform:scaleX(-1)}'
     + '#dvor-nt .sp{animation:dvorsp ease-in-out infinite}@keyframes dvorsp{0%,100%{opacity:.15;transform:scale(.5)}50%{opacity:1;transform:scale(1.25)}}'
-    + '#dvor-nt .nt-note{padding-left:2.6rem;padding-right:2.6rem}@media (prefers-reduced-motion:reduce){#dvor-nt .sp{animation:none;opacity:.8}}'
-    + '@media (max-width:420px){#dvor-nt h2{font-size:1.6rem}#dvor-nt .nt-in{padding:1.3rem 1rem 1.1rem}}';
+    + '#dvor-nt .nt-tr{position:absolute;top:50%;width:34px;pointer-events:none;line-height:0;transform:translateY(-50%)}#dvor-nt .nt-tr.l{left:.55rem}#dvor-nt .nt-tr.r{right:.55rem}#dvor-nt .nt-tr i{display:block;width:100%;height:54px;margin:.5rem 0}#dvor-nt .nt-tr i.s{width:74%;height:40px;margin-left:auto;margin-right:auto}'
+    + '#dvor-nt .nt-in{padding-left:3.1rem;padding-right:3.1rem}#dvor-nt .nt-note{padding-left:0;padding-right:0}@media (prefers-reduced-motion:reduce){#dvor-nt .sp{animation:none;opacity:.8}}'
+    + '@media (max-width:420px){#dvor-nt h2{font-size:1.6rem}#dvor-nt .nt-in{padding:1.3rem 1.9rem 1.1rem}#dvor-nt .nt-tr{width:22px}#dvor-nt .nt-tr.l{left:.3rem}#dvor-nt .nt-tr.r{right:.3rem}#dvor-nt .nt-tr i{height:36px}#dvor-nt .nt-tr i.s{height:27px}}';
   function show() {
     if (document.getElementById('dvor-nt')) return;
     var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -57,7 +59,7 @@
     o.innerHTML = '<div class="nt-box" role="dialog" aria-modal="true" aria-labelledby="dvor-nt-h">'
       + '<span class="nt-c tl">' + TOPC + '</span><span class="nt-c tr">' + TOPC + '</span><span class="nt-c bl">' + BOTC + '</span><span class="nt-c br">' + BOTC + '</span>'
       + '<button type="button" class="nt-x" id="dvor-nt-x" aria-label="Close">&times;</button>'
-      + '<div class="nt-in"><span class="nt-sprig">' + SPRIG + '</span>'
+      + '<div class="nt-in"><span class="nt-tr l" aria-hidden="true"><i>' + TREE + '</i><i class="s">' + TREE + '</i></span><span class="nt-tr r" aria-hidden="true"><i class="s">' + TREE + '</i><i>' + TREE + '</i></span><span class="nt-sprig">' + SPRIG + '</span>'
       + '<span class="nt-kick">' + sp('k') + '</span>'
       + '<h2 id="dvor-nt-h">' + sp('h') + '</h2>'
       + '<p class="nt-p">' + sp('p') + '</p>'
