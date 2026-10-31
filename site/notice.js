@@ -10,7 +10,7 @@
   var L = ['it', 'en', 'de', 'sl', 'nl'];
   var T = {
     k: ['Natale 2026', 'Christmas 2026', 'Weihnachten 2026', 'Božič 2026', 'Kerst 2026'],
-    h: ['Pranzi e cene aziendali di Natale', 'Christmas lunches and dinners for companies', 'Weihnachtsessen für Firmen und Teams', 'Božična kosila in večerje za podjetja', 'Kerstlunches en -diners voor bedrijven'],
+    h: ['Pranzi e cene di Natale', 'Christmas lunches and dinners', 'Weihnachtsessen', 'Božična kosila in večerje', 'Kerstlunches en -diners'],
     p: ['Per i vostri pranzi e le vostre cene di Natale è online il calcolatore: scegliete il menù, i piatti e gli ospiti e scaricate subito il preventivo in PDF.',
         'Our new calculator is online for your Christmas lunches and dinners: choose the menu, the dishes and the guests, and download your quote as a PDF right away.',
         'Für Ihre Weihnachtsessen gibt es jetzt unseren Rechner: Menü, Gerichte und Gäste wählen und das Angebot sofort als PDF herunterladen.',
