@@ -98,4 +98,24 @@ if (!empty($cfg['smtp_host'])) {
 $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers), '-f' . $cfg['mail_from']);
 if (!$ok) $ok = @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers));
 }
+if (!$ok) error_log('dvor contact: invio a ' . $to . ' non riuscito (smtp_host ' . (empty($cfg['smtp_host']) ? 'vuoto: uso mail()' : $cfg['smtp_host']) . ')');
+
+// Conferma di ricevimento al cliente (la richiesta e' gia' arrivata a info@: un errore qui non blocca nulla)
+if ($ok) {
+    $tr = [
+        'it' => ['Abbiamo ricevuto la tua richiesta - Osteria Enoteca Dvor', "Gentile {n},\n\nabbiamo ricevuto la tua richiesta e ti risponderemo al più presto.\n\nEcco il riepilogo di quanto ci hai scritto:\n\n{m}\n\nPer urgenze puoi chiamarci al +39 0481 090740.\n\nA presto,\nOsteria Enoteca Dvor"],
+        'en' => ['We have received your request - Osteria Enoteca Dvor', "Dear {n},\n\nwe have received your request and will get back to you as soon as possible.\n\nHere is a summary of your message:\n\n{m}\n\nFor urgent matters you can call us on +39 0481 090740.\n\nKind regards,\nOsteria Enoteca Dvor"],
+        'de' => ['Wir haben Ihre Anfrage erhalten - Osteria Enoteca Dvor', "Guten Tag {n},\n\nwir haben Ihre Anfrage erhalten und melden uns so schnell wie möglich.\n\nHier die Zusammenfassung Ihrer Nachricht:\n\n{m}\n\nIn dringenden Fällen erreichen Sie uns unter +39 0481 090740.\n\nFreundliche Grüsse,\nOsteria Enoteca Dvor"],
+        'sl' => ['Prejeli smo vaše povpraševanje - Osteria Enoteca Dvor', "Spoštovani {n},\n\nprejeli smo vaše povpraševanje in vam bomo odgovorili v najkrajšem možnem času.\n\nPovzetek vašega sporočila:\n\n{m}\n\nV nujnih primerih nas pokličite na +39 0481 090740.\n\nLep pozdrav,\nOsteria Enoteca Dvor"],
+        'nl' => ['We hebben uw aanvraag ontvangen - Osteria Enoteca Dvor', "Beste {n},\n\nwe hebben uw aanvraag ontvangen en antwoorden zo snel mogelijk.\n\nHierbij een samenvatting van uw bericht:\n\n{m}\n\nVoor dringende zaken kunt u ons bellen op +39 0481 090740.\n\nMet vriendelijke groet,\nOsteria Enoteca Dvor"],
+    ];
+    $t2 = $tr[$lang] ?? $tr['it'];
+    $b2 = str_replace(['{n}', '{m}'], [$name, $message], $t2[1]);
+    if (!empty($cfg['smtp_host'])) {
+        smtp_send($cfg, $email, $t2[0], $b2, $cfg['mail_from'], $cfg['site_name'], $to);
+    } else {
+        $h2 = ['From: ' . $cfg['site_name'] . ' <' . $cfg['mail_from'] . '>', 'Reply-To: ' . $to, 'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit'];
+        @mail($email, '=?UTF-8?B?' . base64_encode($t2[0]) . '?=', $b2, implode("\r\n", $h2), '-f' . $cfg['mail_from']);
+    }
+}
 out($ok ? 200 : 500, ['ok' => (bool)$ok, 'error' => $ok ? null : 'mail']);
