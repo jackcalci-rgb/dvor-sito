@@ -263,9 +263,9 @@
     return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   }
   function makeDocPdf(JsPDF, f, c, no) {
-    var l = lang() === 'it' ? 'it' : 'en', fr;
+    var l = lang() === 'it' ? 'it' : 'en', fr, SC = /iP(hone|ad|od)|Android/.test(navigator.userAgent) ? 1.5 : 2;
     return (window.html2canvas ? Promise.resolve() : loadScript('html2canvas.min.js')).then(function () {
-      fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.style.cssText = 'position:fixed;left:-12000px;top:0;width:794px;height:1200px;border:0;visibility:hidden';
+      fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.style.cssText = 'position:absolute;left:0;top:0;width:794px;height:1200px;border:0;opacity:0;pointer-events:none;z-index:-1';
       document.body.appendChild(fr);
       return new Promise(function (res, rej) { fr.onload = res; fr.onerror = rej; fr.srcdoc = docHtml(f, c, no, l); });
     }).then(function () {
@@ -277,9 +277,9 @@
         ['compact', 'compact2', 'compact3'].forEach(function (k) { if (p1.scrollHeight > 1124) p1.classList.add(k); });
         var pages = doc.querySelectorAll('.page'), pdf = new JsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }), chain = Promise.resolve();
         Array.prototype.forEach.call(pages, function (pg, i) {
-          chain = chain.then(function () { return w.html2canvas ? w.html2canvas(pg, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false }) : window.html2canvas(pg, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false }); }).then(function (cv) {
+          chain = chain.then(function () { return w.html2canvas ? w.html2canvas(pg, { scale: SC, backgroundColor: '#ffffff', useCORS: true, logging: false, windowWidth: 794 }) : window.html2canvas(pg, { scale: SC, windowWidth: 794, backgroundColor: '#ffffff', useCORS: true, logging: false }); }).then(function (cv) {
             var ratio = cv.height / cv.width, ww = 210, hh = 210 * ratio; if (hh > 297) { hh = 297; ww = 297 / ratio; }
-            if (i) pdf.addPage(); pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', (210 - ww) / 2, 0, ww, hh);
+            if (i) pdf.addPage(); pdf.addImage(cv.toDataURL('image/jpeg', 0.9), 'JPEG', (210 - ww) / 2, 0, ww, hh); cv.width = cv.height = 0;
           });
         });
         return chain.then(function () { pdf.setProperties({ title: 'Preventivo ' + no + ' - ' + f.name, author: 'Horeca FVG Srl - Osteria Dvor' }); fr.remove(); return pdf; });
@@ -297,9 +297,9 @@
     var c = calc(), no = quoteNumber(), btn = form.querySelector('button[type=submit]');
     st.busy = true; btn.disabled = true; lib.hidden = false;
     loadPdf().then(function (JsPDF) {
-      return makeDocPdf(JsPDF, f, c, no).catch(function () { return makePdf(JsPDF, f, c, no); }).then(function (doc) {
+      return Promise.race([makeDocPdf(JsPDF, f, c, no), new Promise(function (_, rj) { setTimeout(function () { rj(new Error('timeout')); }, 25000); })]).catch(function () { try { var o = document.querySelector('iframe[aria-hidden=true]'); if (o) o.remove(); } catch (x) {} return makePdf(JsPDF, f, c, no); }).then(function (doc) {
       var blob = doc.output('blob');
-      doc.save('Preventivo-Dvor-' + no + '.pdf');
+      var saveIt = function () { try { doc.save('Preventivo-Dvor-' + no + '.pdf'); } catch (x) { try { window.open(URL.createObjectURL(blob), '_blank'); } catch (y) {} } };
       var fd = new FormData();
       ['name', 'company', 'email', 'phone', 'date', 'notes'].forEach(function (k) { fd.append(k, f[k]); });
       fd.append('lang', lang()); fd.append('number', no); fd.append('kind', f.kind ? 'Cena' : 'Pranzo'); fd.append('package', st.pkg === 'e' ? 'Essential' : 'Premium');
@@ -307,10 +307,10 @@
       fd.append('menu', c.sel.map(function (s) { return s.d[0] + (s.d[1] ? ' (+' + s.d[1] + ' €)' : ''); }).join(' | '));
       fd.append('website', form.elements.website.value); fd.append('t', String(t0));
       fd.append('pdf', blob, 'Preventivo-Dvor-' + no + '.pdf');
-      return fetch('natale-mail.php', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+      return fetch('natale-mail.php', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) { return r.json().catch(function () { return { ok: false, http: r.status }; }); }).then(function (j) { saveIt(); return j; });
       });
-    }).then(function (j) { if (j && j.ok) ok.hidden = false; else fail.hidden = false; })
-      .catch(function () { fail.hidden = false; })
+    }).then(function (j) { if (j && j.ok) ok.hidden = false; else { fail.hidden = false; fail.setAttribute('data-code', 'S' + ((j && j.http) || 'x')); } })
+      .catch(function (x) { fail.hidden = false; fail.setAttribute('data-code', 'E:' + String((x && x.message) || x).slice(0, 60)); try { console.error('natale', x); } catch (y) {} })
       .then(function () { st.busy = false; btn.disabled = false; lib.hidden = true; });
   }
 
