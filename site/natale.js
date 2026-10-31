@@ -20,7 +20,7 @@
   function eur(n) { var r = Math.round(n * 100) / 100; return '€ ' + r.toLocaleString('it-IT', { minimumFractionDigits: (r % 1 ? 2 : 0), maximumFractionDigits: 2 }); }
   function num(v, min, max) { var n = parseInt(v, 10); if (!isFinite(n)) n = 0; return Math.max(min, Math.min(max || 9999, n)); }
 
-  var st = { pkg: 'e', pick: {}, busy: false };
+  var st = { pkg: 'e', pick: {}, busy: false, nowine: false };
   var t0 = Date.now();
 
   function pkgCard(k, name, price, sub) {
@@ -37,7 +37,7 @@
       '<fieldset class="nt-set"><legend><b>1</b>' + T('Pacchetto', 'Package', 'Paket', 'Paket', 'Pakket') + '</legend><div class="nt-pks">' +
       pkgCard('e', 'Essential', 45, T('Antipasto, primo, secondo e dolce · vino del Collio a consumo', 'Starter, first, main and dessert · Collio wine by consumption', 'Vorspeise, erster Gang, Hauptgang und Dessert · Collio-Wein nach Verbrauch', 'Predjed, prva jed, glavna jed in sladica · vino iz Collia po porabi', 'Voorgerecht, eerste, hoofdgerecht en dessert · Collio-wijn naar verbruik')) +
       pkgCard('p', 'Premium', 65, T('Menù con piatti di mare, tartufo e selvaggina · vini con la sommelier', 'Menu with seafood, truffle and game · wines with our sommelier', 'Menü mit Meeresfrüchten, Trüffel und Wild · Weine mit unserer Sommelière', 'Meni z morskimi jedmi, tartufi in divjačino · vina s sommelierko', 'Menu met zeevruchten, truffel en wild · wijnen met onze sommelier')) +
-      '</div></fieldset>' +
+      '</div><label class="nt-nowine" id="nt-nowine"><input type="checkbox" name="nt-nowine"><span>' + T('Non includere il vino nel preventivo: lo sceglieremo e lo pagheremo a consumo il giorno dell’evento', 'Do not include wine in the quote: we will choose it and pay by consumption on the day of the event', 'Wein nicht im Angebot enthalten: wir wählen ihn am Veranstaltungstag und zahlen nach Verbrauch', 'Vina ne vključi v ponudbo: izbrali jih bomo na dan dogodka in plačali po porabi', 'Wijn niet in de offerte opnemen: we kiezen en betalen naar verbruik op de dag van het evenement') + '</span></label></fieldset>' +
       '<fieldset class="nt-set"><legend><b>2</b>' + T('Pranzo o cena, ospiti', 'Lunch or dinner, guests', 'Mittag- oder Abendessen, Gäste', 'Kosilo ali večerja, gostje', 'Lunch of diner, gasten') + '</legend>' +
       '<div class="nt-chips"><label class="nt-chip"><input type="radio" name="nt-kind" value="0" checked><span>' + T('Pranzo', 'Lunch', 'Mittagessen', 'Kosilo', 'Lunch') + '</span></label><label class="nt-chip"><input type="radio" name="nt-kind" value="1"><span>' + T('Cena', 'Dinner', 'Abendessen', 'Večerja', 'Diner') + '</span></label></div>' +
       '<div class="nt-two"><div class="nt-lbl"><span>' + T('Adulti (min. 10)', 'Adults (min. 10)', 'Erwachsene (mind. 10)', 'Odrasli (najmanj 10)', 'Volwassenen (min. 10)') + '</span>' + step('nt-ad', 20, MIN_ADULTS, 200) + '</div>' +
@@ -86,7 +86,7 @@
     var m = D[st.pkg], base = PRICE[st.pkg], supp = 0, sel = [];
     COURSES.forEach(function (c) { var d = m[c][st.pick[st.pkg + c] || 0]; sel.push({ c: c, d: d }); supp += d[1]; });
     var food = base * ad + kd * KIDS, sup = supp * ad, btl = 0, wines = [], vini = 0;
-    if (st.pkg === 'e') {
+    if (st.pkg === 'e' && !st.nowine) {
       /* vino del Collio: 4 calici a testa, bottiglie da 1 litro = 10 calici; bianchi e rossi a meta' (come nel programma preventivi) */
       btl = Math.ceil(ad * GLASSES / 10);
       var w = Math.round(btl / 2), r = btl - w;
@@ -105,7 +105,7 @@
     h += '<div class="nt-tot"><dt>' + T('Totale', 'Total', 'Gesamt', 'Skupaj', 'Totaal') + '</dt><dd>' + eur(c.tot) + '</dd></div>' +
       '<div><dt>' + T('Acconto alla conferma (50%)', 'Deposit on confirmation (50%)', 'Anzahlung bei Bestätigung (50%)', 'Akontacija ob potrditvi (50 %)', 'Aanbetaling bij bevestiging (50%)') + '</dt><dd>' + eur(c.dep) + '</dd></div></dl>';
     h += '<p class="nt-note">' + (st.pkg === 'e'
-      ? T('Vino a consumo: ' + c.btl + ' bottiglie da 1 litro consigliate (4 calici a persona); nel conto finale solo il vino effettivamente bevuto.', 'Wine by consumption: ' + c.btl + ' one-litre bottles recommended (4 glasses per person); the final bill only includes the wine actually drunk.', 'Wein nach Verbrauch: empfohlen ' + c.btl + ' Ein-Liter-Flaschen (4 Gläser pro Person); abgerechnet wird nur der tatsächlich getrunkene Wein.', 'Vino po porabi: priporočenih ' + c.btl + ' enolitrskih steklenic (4 kozarci na osebo); v končnem računu samo dejansko popito vino.', 'Wijn naar verbruik: ' + c.btl + ' flessen van 1 liter aanbevolen (4 glazen per persoon); op de eindrekening alleen de werkelijk gedronken wijn.')
+      ? (st.nowine ? T('Vino non incluso: lo sceglierete con la nostra sommelier il giorno dell’evento e lo pagherete a consumo.', 'Wine not included: you will choose it with our sommelier on the day of the event and pay by consumption.', 'Wein nicht enthalten: Sie wählen ihn am Veranstaltungstag mit unserer Sommelière und zahlen nach Verbrauch.', 'Vino ni vključeno: izbrali ga boste s sommelierko na dan dogodka in plačali po porabi.', 'Wijn niet inbegrepen: u kiest hem op de dag van het evenement met onze sommelier en betaalt naar verbruik.') : T('Vino a consumo: ' + c.btl + ' bottiglie da 1 litro consigliate (4 calici a persona); nel conto finale solo il vino effettivamente bevuto.', 'Wine by consumption: ' + c.btl + ' one-litre bottles recommended (4 glasses per person); the final bill only includes the wine actually drunk.', 'Wein nach Verbrauch: empfohlen ' + c.btl + ' Ein-Liter-Flaschen (4 Gläser pro Person); abgerechnet wird nur der tatsächlich getrunkene Wein.', 'Vino po porabi: priporočenih ' + c.btl + ' enolitrskih steklenic (4 kozarci na osebo); v končnem računu samo dejansko popito vino.', 'Wijn naar verbruik: ' + c.btl + ' flessen van 1 liter aanbevolen (4 glazen per persoon); op de eindrekening alleen de werkelijk gedronken wijn.'))
       : T('I vini si scelgono con la nostra sommelier e si pagano a consumo.', 'Wines are chosen with our sommelier and charged on consumption.', 'Die Weine wählen Sie mit unserer Sommelière; Abrechnung nach Verbrauch.', 'Vina izberete s sommelierko; plačilo po porabi.', 'De wijnen kies je met onze sommelier; afrekening naar verbruik.')) +
       ' ' + T('Pane incluso; caffè, acqua e altre bevande a parte.', 'Bread included; coffee, water and other drinks extra.', 'Brot inklusive; Kaffee, Wasser und andere Getränke extra.', 'Kruh je vključen; kava, voda in druge pijače posebej.', 'Brood inbegrepen; koffie, water en andere dranken apart.') + '</p>';
     root.querySelector('#nt-sum').innerHTML = h;
@@ -167,7 +167,7 @@
     if (c.kd) row(L.kids + '  ' + c.kd + ' x ' + eur(KIDS).replace('€', 'EUR'), eur(c.kd * KIDS).replace('€', 'EUR'));
     doc.setDrawColor(200); doc.line(M, y - 3, W - M, y - 3);
     row(L.tot, eur(c.tot).replace('€', 'EUR'), true); row(L.dep, eur(c.dep).replace('€', 'EUR'));
-    y += 1; para(st.pkg === 'e' ? L.wine.replace('{n}', c.btl).replace('{e}', eur(c.wine).replace('€', 'EUR')) : L.som, 9, mut);
+    y += 1; para((st.pkg === 'e' && c.vini > 0) ? L.wine.replace('{n}', c.btl).replace('{e}', eur(c.wine).replace('€', 'EUR')) : L.som, 9, mut);
     if (f.notes) { h2(L.notes); para(f.notes, 10); }
     h2(L.how); para(L.howt, 10);
     h2(L.terms); L.tl.forEach(function (t) { para('- ' + t, 9, mut); }); para(L.alt, 9, mut);
@@ -215,7 +215,7 @@
     var hasV = c.sel.some(function (x) { return x.d[2]; }), hasS = c.sel.some(function (x) { return x.d[1]; });
     var legend = (hasV || hasS) ? '<div class="d-legend">' + (hasV ? '<span>' + DLEAF + ' ' + T.leg + '</span>' : '') + (hasS ? '<span><b class="d-suppl" style="margin:0 3px 0 0">+' + c.sel.filter(function (x) { return x.d[1]; }).map(function (x) { return x.d[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' / ') + ' €</b> ' + T.legS + '</span>' : '') + '</div>' : '';
     var wine = '';
-    if (st.pkg === 'e') {
+    if (st.pkg === 'e' && c.vini > 0) {
       var tc = c.wines.reduce(function (a, w) { return a + w[1] * 10; }, 0);
       wine = '<div class="d-wine"><div class="k">' + T.vino + ':</div><div class="d-wnote">' + T.litro + ' · ' + T.sugg + '</div><table class="tbl"><tr class="h"><td></td><td class="c">' + T.bott + '</td><td class="c">' + T.cal + '</td></tr>' +
         c.wines.map(function (w) { return '<tr><td style="width:250px;white-space:nowrap">' + esc(w[0]) + '</td><td class="c" style="width:70px">' + w[1] + '</td><td class="c" style="width:90px">' + w[1] * 10 + '</td></tr>'; }).join('') +
@@ -302,7 +302,7 @@
       var saveIt = function () { try { doc.save('Preventivo-Dvor-' + no + '.pdf'); } catch (x) { try { window.open(URL.createObjectURL(blob), '_blank'); } catch (y) {} } };
       var fd = new FormData();
       ['name', 'company', 'email', 'phone', 'date', 'notes'].forEach(function (k) { fd.append(k, f[k]); });
-      fd.append('lang', lang()); fd.append('number', no); fd.append('kind', f.kind ? 'Cena' : 'Pranzo'); fd.append('package', st.pkg === 'e' ? 'Essential' : 'Premium');
+      fd.append('lang', lang()); fd.append('number', no); fd.append('kind', f.kind ? 'Cena' : 'Pranzo'); fd.append('package', (st.pkg === 'e' ? 'Essential' : 'Premium') + (st.pkg === 'e' && st.nowine ? ' (senza vino)' : ''));
       fd.append('adults', c.ad); fd.append('kids', c.kd); fd.append('total', eur(c.tot)); fd.append('deposit', eur(c.dep));
       fd.append('menu', c.sel.map(function (s) { return s.d[0] + (s.d[1] ? ' (+' + s.d[1] + ' €)' : ''); }).join(' | '));
       fd.append('website', form.elements.website.value); fd.append('t', String(t0));
@@ -317,7 +317,8 @@
   build(); dishes(); summary();
   root.addEventListener('change', function (e) {
     var t = e.target;
-    if (t.name === 'nt-pkg') { st.pkg = t.value; dishes(); }
+    if (t.name === 'nt-pkg') { st.pkg = t.value; dishes(); root.querySelector('#nt-nowine').hidden = st.pkg !== 'e'; }
+    else if (t.name === 'nt-nowine') st.nowine = t.checked;
     else if (t.name && t.name.indexOf('nt-c-') === 0) st.pick[st.pkg + t.name.slice(5)] = +t.value;
     summary();
   });
