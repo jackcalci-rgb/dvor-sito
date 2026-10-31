@@ -9,13 +9,13 @@
   try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
   var L = ['it', 'en', 'de', 'sl', 'nl'];
   var T = {
-    k: ['Novità · Natale 2026', 'New · Christmas 2026', 'Neu · Weihnachten 2026', 'Novo · Božič 2026', 'Nieuw · Kerst 2026'],
+    k: ['Natale 2026', 'Christmas 2026', 'Weihnachten 2026', 'Božič 2026', 'Kerst 2026'],
     h: ['Pranzi e cene aziendali di Natale', 'Christmas lunches and dinners for companies', 'Weihnachtsessen für Firmen und Teams', 'Božična kosila in večerje za podjetja', 'Kerstlunches en -diners voor bedrijven'],
-    p: ['Calcola il tuo preventivo in pochi minuti: scegli il pacchetto, i piatti e gli ospiti e scarica subito il PDF.',
-        'Calculate your quote in a few minutes: choose the package, the dishes and the guests, and download the PDF right away.',
-        'Berechnen Sie Ihr Angebot in wenigen Minuten: Paket, Gerichte und Gäste wählen und das PDF sofort herunterladen.',
-        'Izračunajte ponudbo v nekaj minutah: izberite paket, jedi in goste ter takoj prenesite PDF.',
-        'Bereken je offerte in een paar minuten: kies het pakket, de gerechten en de gasten en download meteen de pdf.'],
+    p: ['Per i vostri pranzi e le vostre cene di Natale è online il calcolatore: scegliete il menù, i piatti e gli ospiti e scaricate subito il preventivo in PDF.',
+        'Our new calculator is online for your Christmas lunches and dinners: choose the menu, the dishes and the guests, and download your quote as a PDF right away.',
+        'Für Ihre Weihnachtsessen gibt es jetzt unseren Rechner: Menü, Gerichte und Gäste wählen und das Angebot sofort als PDF herunterladen.',
+        'Za vaša božična kosila in večerje je na voljo naš kalkulator: izberite meni, jedi in goste ter takoj prenesite ponudbo v PDF.',
+        'Voor uw kerstlunches en -diners staat onze calculator online: kies het menu, de gerechten en de gasten en download meteen uw offerte als pdf.'],
     e: ['Essential da 45 € a persona', 'Essential from € 45 per person', 'Essential ab 45 € pro Person', 'Essential od 45 € na osebo', 'Essential vanaf € 45 per persoon'],
     r: ['Premium da 65 € a persona', 'Premium from € 65 per person', 'Premium ab 65 € pro Person', 'Premium od 65 € na osebo', 'Premium vanaf € 65 per persoon'],
     n: ['Nota: a novembre, ogni domenica (1, 8, 15, 22 e 29) la cucina chiude alle 19:00. Per eventi e gruppi contattaci.',
@@ -27,44 +27,32 @@
     c: ['Più tardi', 'Later', 'Später', 'Pozneje', 'Later']
   };
   function sp(k) { return L.map(function (l, i) { return '<span class="' + l + '" lang="' + l + '">' + T[k][i] + '</span>'; }).join(''); }
-  var FLAKE = '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.6l3 2.4 3-2.4M9 20.4l3-2.4 3 2.4M3 9.6l3.6.9-.5 3.5M21 14.4l-3.6-.9.5-3.5M3.6 15l3 -2M20.4 9l-3 2"/></svg>';
-  var BAUBLE = '<svg viewBox="0 0 40 52" width="100%" height="100%"><rect x="17" y="0" width="6" height="9" rx="1" fill="#C9A24B"/><circle cx="20" cy="31" r="19" fill="#A42B20"/><path d="M6 24q14 8 28 0M5 33q15 9 30 0" stroke="#E3C26A" stroke-width="2" fill="none"/><circle cx="13" cy="23" r="4" fill="#fff" opacity=".28"/></svg>';
-  var TREE = '<svg viewBox="0 0 48 60" width="100%" height="100%"><path d="M24 4l-4 8h3l-8 12h5l-10 14h8L9 52h30L27 38h8L25 24h5L22 12h3z" fill="#2F6B3F"/><rect x="21" y="52" width="6" height="7" fill="#6B4423"/><path d="M24 0l1.6 3.6 3.9.4-2.9 2.6.8 3.8L24 8.4 20.6 10.4l.8-3.8-2.9-2.6 3.9-.4z" fill="#E3C26A"/><circle cx="19" cy="30" r="2" fill="#A42B20"/><circle cx="28" cy="40" r="2" fill="#E3C26A"/><circle cx="21" cy="46" r="2" fill="#A42B20"/></svg>';
-  var CSS = '#dvor-nt .nt-box{max-width:31rem;width:100%;max-height:calc(100vh - 2rem);overflow:auto;background:var(--bg,#F6EFE4);color:var(--ink,#2B1D14);box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;font:400 1rem/1.6 var(--sans,system-ui,sans-serif);border-radius:2px}'
-    + '#dvor-nt .nt-top{height:9px;background:repeating-linear-gradient(135deg,#A42B20 0 14px,#F6EFE4 14px 22px,#2F6B3F 22px 36px,#F6EFE4 36px 44px)}'
-    + '#dvor-nt .nt-in{padding:1.6rem 1.75rem 1.4rem;text-align:center;position:relative}'
-    + '#dvor-nt .nt-garland{display:flex;justify-content:center;gap:1.1rem;margin:-.2rem 0 .6rem}#dvor-nt .nt-garland i{display:block;width:26px;height:34px}#dvor-nt .nt-garland i:nth-child(2n){transform:translateY(5px) scale(.85)}'
-    + '#dvor-nt .nt-kick{display:inline-block;background:#A42B20;color:#fff;font:600 .72rem/1 var(--sans,system-ui,sans-serif);letter-spacing:.16em;text-transform:uppercase;padding:.45rem .8rem;margin-bottom:.8rem}'
-    + '#dvor-nt h2{margin:0 0 .6rem;font:400 1.85rem/1.15 var(--serif,Georgia,serif);color:var(--green,#7A2E22)}'
+  var SPRIG = '<svg viewBox="0 0 120 36" width="120" height="36" fill="none" aria-hidden="true"><path d="M8 18h104" stroke="#9C7A3C" stroke-width="1"/><g fill="#3F6B45"><path d="M60 18c-6-10-14-11-20-8 4 7 12 10 20 8zM60 18c6-10 14-11 20-8-4 7-12 10-20 8zM60 18c-6 10-14 11-20 8 4-7 12-10 20-8zM60 18c6 10 14 11 20 8-4-7-12-10-20-8z"/></g><g fill="#7A2E22"><circle cx="60" cy="18" r="3.2"/><circle cx="54.5" cy="20.5" r="2.4"/><circle cx="65.5" cy="20.5" r="2.4"/></g></svg>';
+  var CSS = '#dvor-nt .nt-box{max-width:30rem;width:100%;max-height:calc(100vh - 2rem);overflow:auto;background:var(--bg,#F6EFE4);color:var(--ink,#2B1D14);box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;font:400 1rem/1.6 var(--sans,system-ui,sans-serif);border-top:4px solid var(--gold,#9C5A10)}'
+    + '#dvor-nt .nt-in{margin:.65rem;border:1px solid var(--line,#D8C6AA);outline:1px solid var(--line,#D8C6AA);outline-offset:3px;padding:1.6rem 1.6rem 1.3rem;text-align:center;position:relative}'
+    + '#dvor-nt .nt-sprig{display:block;margin:0 auto .5rem;width:120px;height:36px}'
+    + '#dvor-nt .nt-kick{display:block;font:400 .8rem/1 var(--sans,system-ui,sans-serif);letter-spacing:.28em;text-transform:uppercase;color:var(--gold,#9C5A10);margin-bottom:.7rem}'
+    + '#dvor-nt h2{margin:0 0 .7rem;font:400 1.9rem/1.15 var(--serif,Georgia,serif);color:var(--ink,#2B1D14)}'
     + '#dvor-nt h2::before,#dvor-nt h2::after{display:none!important;content:none!important}'
-    + '#dvor-nt .nt-p{margin:0 0 1rem}'
-    + '#dvor-nt .nt-pk{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:0 0 1.15rem}#dvor-nt .nt-pk span.x{display:inline-block;border:1px solid #2F6B3F;color:#2F6B3F;padding:.4rem .8rem;font-weight:600;font-size:.92rem;background:rgba(47,107,63,.07)}'
-    + '#dvor-nt .nt-pk span.x:last-child{border-color:#A42B20;color:#A42B20;background:rgba(164,43,32,.06)}'
-    + '#dvor-nt .nt-cta{display:inline-block;cursor:pointer;background:#A42B20;color:#fff;border:1px solid #A42B20;padding:.85rem 1.8rem;font:600 1rem var(--sans,system-ui,sans-serif);letter-spacing:.06em;text-decoration:none;box-shadow:0 4px 14px rgba(164,43,32,.35)}#dvor-nt .nt-cta:hover{background:#8a2218}'
-    + '#dvor-nt .nt-later{display:block;margin:.8rem auto 0;background:none;border:0;color:inherit;opacity:.7;text-decoration:underline;cursor:pointer;font:inherit;font-size:.92rem}'
-    + '#dvor-nt .nt-note{margin:1.1rem 0 0;padding-top:.9rem;border-top:1px dashed var(--line,#D8C6AA);font-size:.85rem;line-height:1.5;opacity:.8}'
-    + '#dvor-nt .nt-x{position:absolute;top:.55rem;right:.7rem;background:none;border:0;color:inherit;font-size:1.8rem;line-height:1;cursor:pointer;padding:.25rem .5rem;z-index:3}'
-    + '#dvor-nt .nt-snow{position:absolute;inset:0;overflow:hidden;pointer-events:none;color:#9bb7c9}#dvor-nt .nt-snow b{position:absolute;top:-24px;display:block;opacity:.55;animation:dvorsnow linear infinite}'
-    + '@keyframes dvorsnow{to{transform:translateY(560px) rotate(180deg)}}'
-    + '@media (prefers-reduced-motion:reduce){#dvor-nt .nt-snow b{animation:none;top:12%}}'
-    + '@media (max-width:420px){#dvor-nt h2{font-size:1.55rem}#dvor-nt .nt-in{padding:1.4rem 1.2rem 1.2rem}}';
-  function snow() {
-    var s = '', sizes = [14, 10, 18, 12, 16, 9, 13, 15];
-    for (var i = 0; i < 8; i++) s += '<b style="left:' + (6 + i * 12) + '%;width:' + sizes[i] + 'px;height:' + sizes[i] + 'px;animation-duration:' + (7 + (i * 5) % 6) + 's;animation-delay:-' + (i * 1.3) + 's">' + FLAKE + '</b>';
-    return '<div class="nt-snow" aria-hidden="true">' + s + '</div>';
-  }
+    + '#dvor-nt .nt-p{margin:0 0 .9rem}'
+    + '#dvor-nt .nt-pk{margin:0 0 1.2rem;font:italic 400 1.15rem/1.5 var(--serif,Georgia,serif);color:var(--green,#7A2E22)}#dvor-nt .nt-pk span.x{display:block}'
+    + '#dvor-nt .nt-cta{display:inline-block;cursor:pointer;background:var(--green,#7A2E22);color:var(--on-green,#FBF3E6);border:1px solid var(--green,#7A2E22);padding:.8rem 1.7rem;font:inherit;letter-spacing:.1em;text-transform:uppercase;font-size:.85rem;text-decoration:none}#dvor-nt .nt-cta:hover{filter:brightness(1.15)}'
+    + '#dvor-nt .nt-later{display:block;margin:.75rem auto 0;background:none;border:0;color:inherit;opacity:.65;text-decoration:underline;cursor:pointer;font:inherit;font-size:.9rem}'
+    + '#dvor-nt .nt-note{margin:1.1rem 0 0;padding-top:.8rem;border-top:1px solid var(--line,#D8C6AA);font-size:.84rem;line-height:1.5;opacity:.8}'
+    + '#dvor-nt .nt-x{position:absolute;top:.35rem;right:.5rem;background:none;border:0;color:inherit;font-size:1.8rem;line-height:1;cursor:pointer;padding:.25rem .5rem;z-index:3}'
+    + '@media (max-width:420px){#dvor-nt h2{font-size:1.6rem}#dvor-nt .nt-in{padding:1.3rem 1rem 1.1rem}}';
   function show() {
     if (document.getElementById('dvor-nt')) return;
     var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     var o = document.createElement('div'); o.id = 'dvor-nt';
     o.style.cssText = 'position:fixed;inset:0;z-index:99990;background:rgba(20,12,6,.66);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;transition:opacity .3s';
-    o.innerHTML = '<div class="nt-box" role="dialog" aria-modal="true" aria-labelledby="dvor-nt-h"><div class="nt-top"></div>' + snow()
+    o.innerHTML = '<div class="nt-box" role="dialog" aria-modal="true" aria-labelledby="dvor-nt-h">'
       + '<button type="button" class="nt-x" id="dvor-nt-x" aria-label="Close">&times;</button>'
-      + '<div class="nt-in"><div class="nt-garland" aria-hidden="true"><i>' + BAUBLE + '</i><i>' + TREE + '</i><i>' + BAUBLE + '</i></div>'
+      + '<div class="nt-in"><span class="nt-sprig">' + SPRIG + '</span>'
       + '<span class="nt-kick">' + sp('k') + '</span>'
       + '<h2 id="dvor-nt-h">' + sp('h') + '</h2>'
       + '<p class="nt-p">' + sp('p') + '</p>'
-      + '<div class="nt-pk"><span class="x">' + sp('e') + '</span><span class="x">' + sp('r') + '</span></div>'
+      + '<p class="nt-pk"><span class="x">' + sp('e') + '</span><span class="x">' + sp('r') + '</span></p>'
       + '<a class="nt-cta" id="dvor-nt-b" href="' + HREF + '">' + sp('b') + '</a>'
       + '<button type="button" class="nt-later" id="dvor-nt-l">' + sp('c') + '</button>'
       + '<p class="nt-note">' + sp('n') + ' <a href="tel:+390481090740" style="text-decoration:underline;white-space:nowrap">+39 0481 090740</a> · <a href="mailto:info@osteriadvor.com" style="text-decoration:underline">info@osteriadvor.com</a></p></div></div>';
