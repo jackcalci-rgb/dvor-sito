@@ -99,7 +99,7 @@
   function summary() {
     var c = calc(), h = '<h3>' + T('Il tuo preventivo', 'Your quote', 'Ihr Angebot', 'Vaša ponudba', 'Je offerte') + '</h3><dl>' +
       '<div><dt>' + (st.pkg === 'e' ? 'Essential' : 'Premium') + ' · ' + c.ad + ' × ' + eur(c.base) + '</dt><dd>' + eur(c.base * c.ad) + '</dd></div>';
-    if (c.sup) h += '<div><dt>' + T('Supplementi', 'Supplements', 'Zuschläge', 'Doplačila', 'Toeslagen') + ' · ' + c.ad + ' × ' + eur(c.sup) + '</dt><dd>' + eur(c.sup * c.ad) + '</dd></div>';
+    if (c.sup) h += '<div><dt>' + T('Supplementi', 'Supplements', 'Zuschläge', 'Doplačila', 'Toeslagen') + ' · ' + c.ad + ' × ' + eur(c.supp) + '</dt><dd>' + eur(c.sup) + '</dd></div>';
     if (c.kd) h += '<div><dt>' + T('Bambini', 'Children', 'Kinder', 'Otroci', 'Kinderen') + ' · ' + c.kd + ' × ' + eur(KIDS) + '</dt><dd>' + eur(c.kd * KIDS) + '</dd></div>';
     if (c.vini) h += '<div><dt>' + T('Vino del Collio', 'Collio wine', 'Collio-Wein', 'Vino iz Collia', 'Collio-wijn') + ' · ' + c.btl + ' × ' + eur(WINE_BTL) + '</dt><dd>' + eur(c.vini) + '</dd></div>';
     h += '<div class="nt-tot"><dt>' + T('Totale', 'Total', 'Gesamt', 'Skupaj', 'Totaal') + '</dt><dd>' + eur(c.tot) + '</dd></div>' +
@@ -163,7 +163,7 @@
     });
     h2(L.tot);
     row((st.pkg === 'e' ? 'Essential' : 'Premium') + '  ' + c.ad + ' x ' + eur(c.base).replace('€', 'EUR'), eur(c.base * c.ad).replace('€', 'EUR'));
-    if (c.sup) row(L.sup + '  ' + c.ad + ' x ' + eur(c.sup).replace('€', 'EUR'), eur(c.sup * c.ad).replace('€', 'EUR'));
+    if (c.sup) row(L.sup + '  ' + c.ad + ' x ' + eur(c.supp).replace('€', 'EUR'), eur(c.sup).replace('€', 'EUR'));
     if (c.kd) row(L.kids + '  ' + c.kd + ' x ' + eur(KIDS).replace('€', 'EUR'), eur(c.kd * KIDS).replace('€', 'EUR'));
     doc.setDrawColor(200); doc.line(M, y - 3, W - M, y - 3);
     row(L.tot, eur(c.tot).replace('€', 'EUR'), true); row(L.dep, eur(c.dep).replace('€', 'EUR'));
