@@ -52,7 +52,7 @@ if (count($hits) >= 5) out(429, ['ok' => false, 'error' => 'rate']);
 $hits[] = $now; @file_put_contents($rf, implode("\n", $hits), LOCK_EX);
 
 $f = [];
-foreach (['name' => 100, 'company' => 120, 'email' => 150, 'phone' => 40, 'date' => 30, 'number' => 40, 'kind' => 10, 'package' => 12, 'adults' => 5, 'kids' => 5, 'total' => 20, 'deposit' => 20, 'lang' => 2] as $k => $m) $f[$k] = oneline((string)($_POST[$k] ?? ''), $m);
+foreach (['name' => 100, 'company' => 120, 'email' => 150, 'phone' => 40, 'date' => 30, 'number' => 40, 'kind' => 10, 'package' => 30, 'adults' => 5, 'kids' => 5, 'total' => 20, 'deposit' => 20, 'lang' => 2] as $k => $m) $f[$k] = oneline((string)($_POST[$k] ?? ''), $m);
 $f['menu'] = oneline((string)($_POST['menu'] ?? ''), 1200);
 $notes = clean((string)($_POST['notes'] ?? ''), 2000);
 if ($f['name'] === '' || !filter_var($f['email'], FILTER_VALIDATE_EMAIL) || !preg_match('/^[0-9A-Z]{8,30}$/', $f['number'])) out(422, ['ok' => false, 'error' => 'invalid']);
