@@ -265,6 +265,7 @@ bs.forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute(
 .evh{font-size:clamp(1.5rem,3vw,2rem);margin:0 0 1.4rem;text-align:left}
 .evfeat{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:2.6rem;align-items:start;border:1px solid var(--gold,#b08d57);background:var(--bg);padding:1.6rem;box-shadow:0 24px 60px rgba(0,0,0,.08)}
 .evfeat .evimg{display:block;width:100%;height:auto;cursor:zoom-in;background:var(--alt,#f1ebe0)}
+.evtwo{display:grid;gap:.8rem}
 .evfeat .evph{aspect-ratio:4/5;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#3a2214,#1d1510);color:#fff;text-align:center}
 .evbig{font-size:clamp(4rem,9vw,6.5rem);line-height:1;font-weight:300}.evmon{letter-spacing:.3em;text-transform:uppercase;font-size:.95rem;margin-top:.4rem}
 .evtag{display:inline-block;color:var(--ink);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase}
@@ -458,7 +459,8 @@ function menuBtn(r){if(!r.menu)return null;var a=el('a','btn',T('menu'));a.href=
   if(r.menuType==='pdf'){a.target='_blank';a.rel='noopener'}else{a.addEventListener('click',function(e){e.preventDefault();lightbox(upf(r.menu))})}return a}
 function pdfBtn(r){if(!r.flyerPdf)return null;var a=el('a','btn',T('pdf'));a.href=upf(r.flyerPdf);a.target='_blank';a.rel='noopener';a.setAttribute('download','');return a}
 function flyer(r,big){
-  if(r.flyer){var i=document.createElement('img');i.className='evimg';i.src=upf(r.flyer);i.alt=ttl(r);i.loading='lazy';i.addEventListener('click',function(){lightbox(upf(r.flyer))});return i}
+  if(r.flyer){var mk=function(u){var i=document.createElement('img');i.className='evimg';i.src=upf(u);i.alt=ttl(r);i.loading='lazy';i.addEventListener('click',function(){lightbox(upf(u))});return i};
+    if(r.flyer2){var w=el('div','evtwo');w.appendChild(mk(r.flyer));w.appendChild(mk(r.flyer2));return w}return mk(r.flyer)}
   var p=el('div','evph');var n=new Date(r.date+'T12:00:00Z');
   if(big){p.appendChild(el('div','evbig',String(n.getUTCDate())));p.appendChild(el('div','evmon',fmt(r.date,{month:'long'})))}
   else{p.appendChild(el('div','evbig',String(n.getUTCDate())));p.appendChild(el('div','evmon',fmt(r.date,{month:'short'})))}
