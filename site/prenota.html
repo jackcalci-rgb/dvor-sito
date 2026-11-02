@@ -442,6 +442,12 @@ function send(){try{f.contentWindow.postMessage(st(),O)}catch(e){}}
 f.addEventListener("load",send);
 new MutationObserver(send).observe(document.documentElement,{attributes:true,attributeFilter:["data-lang","data-theme"]});
 window.addEventListener("message",function(e){if(e.origin!==O||!e.data||e.data.type!=="dvor-prenota-height")return;var h=+e.data.height;if(h>300&&h<8000)f.style.height=h+"px"});
+/* prenotazione completata nel riquadro: conversione per Google Ads (GA4 "prenotazione"), Meta (Schedule) e Umami */
+window.addEventListener("message",function(e){var m=e.data;if(e.origin!==O||e.source!==f.contentWindow||!m||m.type!=="dvor-prenota-booked")return;
+  var v=+m.valore||0,p=+m.persone||0,ev=String(m.evento||"").slice(0,80);
+  try{if(window.gtag)gtag("event","prenotazione",v?{currency:"EUR",value:v,persone:p,evento:ev}:{persone:p,evento:ev})}catch(x){}
+  try{if(window.fbq)fbq("track","Schedule",v?{currency:"EUR",value:v,content_name:ev}:{content_name:ev||"Tavolo"})}catch(x){}
+  try{if(window.umami)umami.track("prenotazione",{persone:p,evento:ev})}catch(x){}});
 })();
 </script>
 </body>
