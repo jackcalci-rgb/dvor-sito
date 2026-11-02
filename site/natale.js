@@ -287,6 +287,15 @@
     }).catch(function (e) { if (fr) fr.remove(); throw e; });
   }
 
+  /* Conversione: preventivo scaricato. GA4 "generate_lead" (da importare in Google Ads come conversione),
+     Lead per il Pixel di Meta e evento Umami. Rispettano il consenso gia' gestito da analytics.js. */
+  function track(c) {
+    var pkg = st.pkg === 'e' ? 'Essential' : 'Premium', val = Math.round(c.tot * 100) / 100;
+    try { if (window.gtag) gtag('event', 'generate_lead', { currency: 'EUR', value: val, lead_source: 'preventivo_natale', pacchetto: pkg, adulti: c.ad }); } catch (x) {}
+    try { if (window.fbq) fbq('track', 'Lead', { currency: 'EUR', value: val, content_name: 'Preventivo Natale ' + pkg }); } catch (x) {}
+    try { if (window.umami) umami.track('preventivo_natale', { pacchetto: pkg, adulti: c.ad }); } catch (x) {}
+  }
+
   function submit(e) {
     e.preventDefault(); if (st.busy) return;
     var form = root.querySelector('#nt-form'), g = function (n) { return (form.elements[n].value || '').trim(); };
@@ -309,7 +318,7 @@
       fd.append('pdf', blob, 'Preventivo-Dvor-' + no + '.pdf');
       return fetch('natale-mail.php', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) { return r.json().catch(function () { return { ok: false, http: r.status }; }); }).then(function (j) { saveIt(); return j; });
       });
-    }).then(function (j) { if (j && j.ok) ok.hidden = false; else { fail.hidden = false; fail.setAttribute('data-code', 'S' + ((j && j.http) || 'x')); } })
+    }).then(function (j) { track(c); if (j && j.ok) ok.hidden = false; else { fail.hidden = false; fail.setAttribute('data-code', 'S' + ((j && j.http) || 'x')); } })
       .catch(function (x) { fail.hidden = false; fail.setAttribute('data-code', 'E:' + String((x && x.message) || x).slice(0, 60)); try { console.error('natale', x); } catch (y) {} })
       .then(function () { st.busy = false; btn.disabled = false; lib.hidden = true; });
   }
