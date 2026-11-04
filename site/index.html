@@ -669,6 +669,17 @@ fetch('reviews.php',{cache:'no-cache'}).then(function(r){return r.ok?r.json():nu
   <button class="lb-n" id="lb-n" type="button" aria-label="Successiva">&#8250;</button>
 </div>
 
+<section id="newsletter"><div class="wrap center">
+  <h2><span class="it" lang="it">Resta aggiornato</span><span class="en" lang="en">Stay in touch</span><span class="de" lang="de">Bleiben Sie auf dem Laufenden</span><span class="sl" lang="sl">Ostanite v stiku</span><span class="nl" lang="nl">Blijf op de hoogte</span></h2>
+  <p class="lead"><span class="it" lang="it">Iscriviti alle novità di Dvor: eventi, serate a tema, menù di stagione e vini del Collio, direttamente nella tua casella email.</span><span class="en" lang="en">Subscribe to Dvor news: events, themed evenings, seasonal menus and Collio wines, straight to your inbox.</span><span class="de" lang="de">Abonnieren Sie die Neuigkeiten von Dvor: Veranstaltungen, Themenabende, Saisonmenüs und Collio-Weine direkt in Ihr Postfach.</span><span class="sl" lang="sl">Naročite se na novice Dvora: dogodki, tematski večeri, sezonski meniji in vina iz Brd, neposredno v vaš e-poštni predal.</span><span class="nl" lang="nl">Schrijf je in voor het nieuws van Dvor: evenementen, themaavonden, seizoensmenu's en Collio-wijnen, rechtstreeks in je mailbox.</span></p>
+  <iframe id="nl-f" src="https://prenota.osteriadvor.com/m.php?iscriviti=embed&amp;lang=it" style="display:block;width:100%;max-width:480px;height:460px;border:0;margin:1.2rem auto 0" title="Iscriviti alle novità di Dvor" loading="lazy"></iframe>
+</div></section>
+<script>
+(function(){var f=document.getElementById("nl-f");if(!f)return;var B="https://prenota.osteriadvor.com/m.php?iscriviti=embed&lang=";
+function set(){var l=document.documentElement.getAttribute("data-lang")||"it";if(!/^(it|en|de|sl|nl)$/.test(l))l="it";var u=B+l;if(f.getAttribute("data-l")!==l){f.setAttribute("data-l",l);f.src=u}}
+set();new MutationObserver(set).observe(document.documentElement,{attributes:true,attributeFilter:["data-lang"]})})();
+</script>
+
 <footer id="visit"><div class="wrap">
   <div class="cols">
     <div><img width="1067" height="248" alt="Dvor" src="images/logo-light.png"><p>Osteria Enoteca Dvor<br><span class="it" lang="it">Cucina di confine e friulana nel cuore del Collio.</span><span class="en" lang="en">Border and Friulian cuisine in the heart of the Collio.</span><span class="de" lang="de">Grenz- und friaulische Küche im Herzen des Collio.</span><span class="sl" lang="sl">Obmejna in furlanska kuhinja v srcu Collia.</span><span class="nl" lang="nl">Grens- en Friulische keuken in het hart van de Collio.</span><br><span class="it" lang="it">Meta gastronomica per residenti e turisti in cerca di autenticità e qualità.</span><span class="en" lang="en">A gastronomic destination for locals and visitors seeking authenticity and quality.</span><span class="de" lang="de">Ein gastronomisches Ziel für Einheimische und Reisende, die Authentizität und Qualität suchen.</span><span class="sl" lang="sl">Gastronomska destinacija za domačine in turiste, ki iščejo pristnost in kakovost.</span><span class="nl" lang="nl">Een gastronomische bestemming voor inwoners en toeristen die authenticiteit en kwaliteit zoeken.</span></p><a class="btn" href="prenota.html"><span class="it" lang="it">Prenota un tavolo</span><span class="en" lang="en">Reserve a table</span><span class="de" lang="de">Tisch reservieren</span><span class="sl" lang="sl">Rezerviraj mizo</span><span class="nl" lang="nl">Tafel reserveren</span></a></div>
