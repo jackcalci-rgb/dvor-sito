@@ -1021,7 +1021,21 @@ function flyer(r,big){
   p.appendChild(el('div','evsoon',T('soon')));return p}
 function when(r){var s=fmt(r.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});s=s.charAt(0).toUpperCase()+s.slice(1);if(r.time)s+=' · '+T('at')+' '+r.time;return s}
 function paras(t){var f=document.createDocumentFragment();String(t||'').split(/\n+/).forEach(function(x){if(x.trim())f.appendChild(el('p',null,x.trim()))});return f}
-function load(cb){fetch('data/events.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():SEED}).catch(function(){return SEED}).then(function(j){
+/* eventi del sito (data/events.json) + eventi creati nell'area staff di prenota.osteriadvor.com (evento.php?json=1).
+   Un evento che c'è già qui (stessa data, titolo simile) resta com'è qui: dalle prenotazioni prende solo i campi vuoti e il link. */
+var PREN='https://prenota.osteriadvor.com/evento.php?json=1';
+function nrm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+function same(a,b){if(a.date!==b.date)return false;var x=nrm(a.title_it||a.title_en),y=nrm(b.title_it||b.title_en);if(!x||!y)return true;if(x===y||x.indexOf(y)>=0||y.indexOf(x)>=0)return true;
+  var w=y.split(' ').filter(function(z){return z.length>=4});return x.split(' ').filter(function(z){return z.length>=4&&w.indexOf(z)>=0}).length>0}
+function merge(site,pren){var out=site.slice();
+  pren.forEach(function(p){if(!p||!p.date)return;var s=null;for(var i=0;i<out.length;i++)if(!out[i]._p&&same(out[i],p)){s=out[i];break}
+    if(!s){var n=Object.assign({},p);n._p=1;out.push(n);return}
+    ['title_it','title_en','desc_it','desc_en','price','time','flyer'].forEach(function(k){if(!s[k]&&p[k])s[k]=p[k]});
+    if(!s.link)s.link=p.link;s.page=p.page;s.alias=p.id;s._p=1});
+  return out}
+function getJ(u,fb){return fetch(u,{cache:'no-cache'}).then(function(r){return r.ok?r.json():fb}).catch(function(){return fb})}
+function load(cb){Promise.all([getJ('data/events.json',SEED),Promise.race([getJ(PREN,[]),new Promise(function(ok){setTimeout(function(){ok([])},5000)})])]).then(function(x){
+  var j=merge(Array.isArray(x[0])?x[0]:SEED,Array.isArray(x[1])?x[1]:[]);
   var t=today(),ev=(Array.isArray(j)?j:[]).filter(function(r){return r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&(r.title_it||r.title_en)});
   var up=ev.filter(function(r){return r.date>=t}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:((a.time||'')<(b.time||'')?-1:1)});
   var past=ev.filter(function(r){return r.date<t}).sort(function(a,b){return a.date<b.date?1:-1});cb(up,past)})}
