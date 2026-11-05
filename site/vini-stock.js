@@ -4,11 +4,13 @@
 (function () {
   var MAP = window.DVOR_WMAP; if (!MAP || !window.fetch) return;
   function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
-  fetch('vini-stock.php', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+  function run() { fetch('vini-stock.php', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
     if (!j || !j.ok || !j.items || !j.items.length) return;
+    document.querySelectorAll('[data-off]').forEach(function (e) { e.hidden = false; e.style.display = ''; e.removeAttribute('data-off'); });
+    document.querySelectorAll('.wg,section.course,#evidenza').forEach(function (e) { e.style.display = ''; });
     var q = {}; j.items.forEach(function (x) { var k = norm(x.name); q[k] = (q[k] || 0) + (+x.qty || 0); });
     var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if (k in q && q[k] <= 0) off[w] = 1; });
-    var n = Object.keys(off).length; if (!n) return;
+    var n = Object.keys(off).length;
     document.querySelectorAll('[data-w]').forEach(function (e) { if (off[e.getAttribute('data-w')]) { e.hidden = true; e.style.display = 'none'; e.setAttribute('data-off', '1'); } });
     function vis(e) { return !e.hasAttribute('data-off'); }
     document.querySelectorAll('.wg').forEach(function (g) { if (!Array.prototype.some.call(g.querySelectorAll('li.wine'), vis)) g.style.display = 'none'; });
@@ -22,5 +24,6 @@
     var mx = 1; Object.keys(co).forEach(function (k) { mx = Math.max(mx, co[k]); });
     document.querySelectorAll('.dbars li[data-o]').forEach(function (e) { var c = co[e.getAttribute('data-o')] || 0; e.style.display = c ? '' : 'none'; var bb = e.querySelector('b'); if (bb) bb.textContent = c; var i = e.querySelector('.db i'); if (i) i.style.width = (c / mx * 100).toFixed(1) + '%'; });
     document.querySelectorAll('.dcats li[data-t]').forEach(function (e) { var bb = e.querySelector('b'); if (bb) bb.textContent = ct[e.getAttribute('data-t')] || 0; });
-  }).catch(function () {});
+  }).catch(function () {}); }
+  run(); setInterval(function () { if (!document.hidden) run(); }, 60000);
 })();

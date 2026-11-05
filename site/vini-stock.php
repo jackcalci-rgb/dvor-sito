@@ -1,9 +1,9 @@
 <?php
 /* Disponibilita' dei vini: il sito la legge da Mescita (mescita.profumidistria.com), che a sua volta la legge da Odoo.
    Serve in config.php: 'mescita_url' => 'https://mescita.profumidistria.com' e 'mescita_token' => '<lo stesso di MESCITA_SITE_TOKEN>'.
-   Copia di 10 minuti in data/vini-stock.json; se Mescita non risponde si usa l'ultima copia, altrimenti errore (la carta resta completa). */
+   Copia di 45 secondi (quasi tempo reale) in data/vini-stock.json; se Mescita non risponde si usa l'ultima copia, altrimenti errore (la carta resta completa). */
 header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: public, max-age=120');
+header('Cache-Control: public, max-age=30');
 $cfg = is_file(__DIR__ . '/config.php') ? (require __DIR__ . '/config.php') : [];
 $url = rtrim((string)($cfg['mescita_url'] ?? ''), '/'); $tok = (string)($cfg['mescita_token'] ?? '');
 $dir = __DIR__ . '/data'; $cache = $dir . '/vini-stock.json';
@@ -14,7 +14,7 @@ function clean($j) {
     return $o ?: null;
 }
 function reply($items, $src) { echo json_encode(['ok' => true, 'items' => $items, 'source' => $src], JSON_UNESCAPED_UNICODE); exit; }
-if (is_file($cache) && time() - filemtime($cache) < 600) { $c = json_decode((string)file_get_contents($cache), true); if (!empty($c['items'])) reply($c['items'], 'cache'); }
+if (is_file($cache) && time() - filemtime($cache) < 45) { $c = json_decode((string)file_get_contents($cache), true); if (!empty($c['items'])) reply($c['items'], 'cache'); }
 $items = null;
 if ($url !== '' && $tok !== '' && function_exists('curl_init')) {
     $ch = curl_init($url . '/api/sito/vini');
