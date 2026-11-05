@@ -190,7 +190,7 @@ def featured():
             '<p class="wx-note">%s <a href="menu.html">%s →</a></p></div></section>\n') % (
             S(H2), S(SUB), ''.join(card(*f) for f in FEAT), S(NOTE), S(MENU))
 
-CSS = ('<style id="vini2">.wine{display:block!important;padding:.95rem 0!important}'
+CSS = ('<style id="vini2">[data-off],.wine[data-off],.wam[data-off],.wx[data-off]{display:none!important}.wine{display:block!important;padding:.95rem 0!important}'
  '.wrow{display:flex;align-items:baseline;gap:.8rem}'
  '.wdesc{margin:.35rem 0 0;color:var(--muted);font-size:.93rem;line-height:1.6;max-width:70ch}'
  '.wine .wpair{margin:.3rem 0 0;font-size:.88rem}'
@@ -292,7 +292,7 @@ def apply(path):
     wmap = {str(w['i']): w['name'] for w in W if w['id'] and w['i'] in ALL}
     mapjs = '<script>window.DVOR_WMAP=' + json.dumps(wmap, ensure_ascii=False) + ';</script>\n'
     s = s[:i] + featured() + dash() + courses() + amari() + mapjs + s[j:]
-    if 'vini-stock.js' not in s: s = s.replace('</body>', '<script src="vini-stock.js" defer></script>\n</body>', 1)
+    if 'vini-stock.js' not in s: s = s.replace('</body>', '<script src="vini-stock.js" defer></script>\n<script src="mescita-tab.js" defer></script>\n</body>', 1)
     s = re.sub(r'<style id="vini[234]">.*?</style>', '', s, flags=re.S)
     s = s.replace('</head>', CSS + CSS2 + CSS3 + '</head>', 1)
     nav_it = '<a href="#amari">' + S(AM_T) + '</a>'
