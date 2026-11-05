@@ -1,12 +1,14 @@
 <?php
 /* Disponibilita' dei vini: il sito la legge da Mescita (mescita.profumidistria.com), che a sua volta la legge da Odoo.
-   Modo diretto (consigliato): in config.php 'mescita_url', 'mescita_user', 'mescita_pin' (utente admin dedicato al sito): il sito entra come quell'utente e legge /api/inventario (disponibili = giacenza Odoo - bottiglie aperte).
+   Modo diretto (consigliato): in data/mescita.php (o config.php) 'mescita_url', 'mescita_user', 'mescita_pin' (utente admin dedicato al sito): il sito entra come quell'utente e legge /api/inventario (disponibili = giacenza Odoo - bottiglie aperte).
    Modo alternativo: endpoint /api/sito/vini con 'mescita_token'.
    Serve in config.php: 'mescita_url' => 'https://mescita.profumidistria.com' e 'mescita_token' => '<lo stesso di MESCITA_SITE_TOKEN>'.
    Copia di 45 secondi (quasi tempo reale) in data/vini-stock.json; se Mescita non risponde si usa l'ultima copia, altrimenti errore (la carta resta completa). */
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: public, max-age=30');
 $cfg = is_file(__DIR__ . '/config.php') ? (require __DIR__ . '/config.php') : [];
+$mc = is_file(__DIR__ . '/data/mescita.php') ? (require __DIR__ . '/data/mescita.php') : []; /* credenziali Mescita: data/mescita.php ha la precedenza (il deploy non lo tocca) */
+if (is_array($mc)) $cfg = $mc + $cfg;
 $url = rtrim((string)($cfg['mescita_url'] ?? ''), '/'); $tok = (string)($cfg['mescita_token'] ?? '');
 $dir = __DIR__ . '/data'; $cache = $dir . '/vini-stock.json';
 function clean($j) {
