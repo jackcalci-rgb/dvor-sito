@@ -272,6 +272,8 @@ bs.forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute(
 .evarr{position:absolute;top:44%;transform:translateY(-50%);width:2.6rem;height:2.6rem;border-radius:50%;border:1px solid var(--gold,#b08d57);background:rgba(246,239,228,.92);color:#2b1d14;font-size:1.7rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 0 .2rem;z-index:2}
 .evarr[hidden]{display:none}
 .evprev{left:.5rem}.evnext{right:.5rem}
+.evd.open{-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important}
+.evmore{display:inline-block;margin:-.3rem 0 .9rem;padding:0;background:none;border:0;border-bottom:1px solid var(--gold,#b08d57);color:var(--gold,#b08d57);font:inherit;font-size:.9rem;letter-spacing:.04em;cursor:pointer}
 .evdots{display:flex;gap:.5rem;justify-content:center;padding:.7rem 0 .2rem}
 .evdot{width:.7rem;height:.7rem;border-radius:50%;border:1px solid var(--gold,#b08d57);background:transparent;padding:0;cursor:pointer}
 .evdot.on{background:var(--gold,#b08d57)}
@@ -489,9 +491,12 @@ function load(cb){fetch('data/events.json',{cache:'no-cache'}).then(function(r){
   var past=ev.filter(function(r){return r.date<t}).sort(function(a,b){return a.date<b.date?1:-1});cb(up,past)})}
 function onLang(f){new MutationObserver(f).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']})}
 
+var MORE={it:['Leggi tutto','Mostra meno'],en:['Read more','Show less'],de:['Mehr lesen','Weniger anzeigen'],sl:['Preberi več','Pokaži manj'],nl:['Lees meer','Minder tonen']};
+function moreBtn(d){var m=MORE[L()]||MORE.it,x=el('button','evmore',m[0]);x.type='button';x.setAttribute('aria-expanded','false');
+  x.addEventListener('click',function(){var o=d.classList.toggle('open');x.textContent=o?m[1]:m[0];x.setAttribute('aria-expanded',String(o))});return x}
 function card(r,past){var c=el('article','evc'+(past?' evpast':''));c.id='ev-'+r.id;c.appendChild(flyer(r,false));var b=el('div','evb');
   if(!past)b.appendChild(el('span','evcd',cd(r.date)));
-  b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));var d=el('div','evd');d.appendChild(paras(dsc(r)));b.appendChild(d);
+  b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));var d=el('div','evd');d.appendChild(paras(dsc(r)));b.appendChild(d);if(dsc(r).length>140)b.appendChild(moreBtn(d));
   if(r.price)b.appendChild(el('span','evpr',r.price));
   var bt=el('div','evbt');if(!past){var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a)}var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);if(bt.children.length)b.appendChild(bt);c.appendChild(b);return c}
 function featured(r){var f=el('article','evfeat');f.id='ev-'+r.id;var l=el('div');l.appendChild(flyer(r,true));var x=el('div');
