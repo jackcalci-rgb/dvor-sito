@@ -485,7 +485,21 @@ function flyer(r,big){
   p.appendChild(el('div','evsoon',T('soon')));return p}
 function when(r){var s=fmt(r.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});s=s.charAt(0).toUpperCase()+s.slice(1);if(r.time)s+=' · '+T('at')+' '+r.time;return s}
 function paras(t){var f=document.createDocumentFragment();String(t||'').split(/\n+/).forEach(function(x){if(x.trim())f.appendChild(el('p',null,x.trim()))});return f}
-function load(cb){fetch('data/events.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():SEED}).catch(function(){return SEED}).then(function(j){
+/* eventi del sito (data/events.json) + eventi creati nell'area staff di prenota.osteriadvor.com (evento.php?json=1).
+   Un evento che c'è già qui (stessa data, titolo simile) resta com'è qui: dalle prenotazioni prende solo i campi vuoti e il link. */
+var PREN='https://prenota.osteriadvor.com/evento.php?json=1';
+function nrm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+function same(a,b){if(a.date!==b.date)return false;var x=nrm(a.title_it||a.title_en),y=nrm(b.title_it||b.title_en);if(!x||!y)return true;if(x===y||x.indexOf(y)>=0||y.indexOf(x)>=0)return true;
+  var w=y.split(' ').filter(function(z){return z.length>=4});return x.split(' ').filter(function(z){return z.length>=4&&w.indexOf(z)>=0}).length>0}
+function merge(site,pren){var out=site.slice();
+  pren.forEach(function(p){if(!p||!p.date)return;var s=null;for(var i=0;i<out.length;i++)if(!out[i]._p&&same(out[i],p)){s=out[i];break}
+    if(!s){var n=Object.assign({},p);n._p=1;out.push(n);return}
+    ['title_it','title_en','desc_it','desc_en','price','time','flyer'].forEach(function(k){if(!s[k]&&p[k])s[k]=p[k]});
+    if(!s.link)s.link=p.link;s.page=p.page;s.alias=p.id;s._p=1});
+  return out}
+function getJ(u,fb){return fetch(u,{cache:'no-cache'}).then(function(r){return r.ok?r.json():fb}).catch(function(){return fb})}
+function load(cb){Promise.all([getJ('data/events.json',SEED),Promise.race([getJ(PREN,[]),new Promise(function(ok){setTimeout(function(){ok([])},5000)})])]).then(function(x){
+  var j=merge(Array.isArray(x[0])?x[0]:SEED,Array.isArray(x[1])?x[1]:[]);
   var t=today(),ev=(Array.isArray(j)?j:[]).filter(function(r){return r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&(r.title_it||r.title_en)});
   var up=ev.filter(function(r){return r.date>=t}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:((a.time||'')<(b.time||'')?-1:1)});
   var past=ev.filter(function(r){return r.date<t}).sort(function(a,b){return a.date<b.date?1:-1});cb(up,past)})}
@@ -514,9 +528,10 @@ function render(){var nx=document.getElementById('ev-next'),ug=document.getEleme
 function ld(){var old=document.getElementById('ev-ld');if(old)old.remove();if(!UP.length)return;var o=location.origin+location.pathname.replace(/[^\/]*$/,'');
   var g=UP.slice(0,10).map(function(r){var e={'@type':'Event',name:r.title_it||r.title_en,startDate:r.date+(r.time?'T'+r.time+':00':''),eventStatus:'https://schema.org/EventScheduled',eventAttendanceMode:'https://schema.org/OfflineEventAttendanceMode',
     location:{'@type':'Place',name:'Osteria Enoteca Dvor',address:{'@type':'PostalAddress',streetAddress:'Via Castello 5',addressLocality:'San Floriano del Collio',postalCode:'34070',addressCountry:'IT'}},
-    description:r.desc_it||r.desc_en||undefined,organizer:{'@type':'Organization',name:'Osteria Enoteca Dvor'}};if(r.flyer)e.image=[o+upf(r.flyer)];if(r.price)e.offers={'@type':'Offer',description:r.price,url:BOOK};return e});
+    description:r.desc_it||r.desc_en||undefined,organizer:{'@type':'Organization',name:'Osteria Enoteca Dvor'}};if(r.flyer)e.image=[/^https?:/.test(r.flyer)?r.flyer:o+upf(r.flyer)];if(r.price)e.offers={'@type':'Offer',description:r.price,url:BOOK};return e});
   var s=document.createElement('script');s.type='application/ld+json';s.id='ev-ld';s.textContent=JSON.stringify(g);document.head.appendChild(s)}
-load(function(u,p){UP=u;PAST=p;render();ld();if(location.hash){var t=document.getElementById(location.hash.slice(1));if(t)t.scrollIntoView()}});onLang(render);
+load(function(u,p){UP=u;PAST=p;render();ld();if(location.hash){var hs=location.hash.slice(1),t=document.getElementById(hs);
+  if(!t)UP.concat(PAST).some(function(r){if('ev-'+r.alias===hs){t=document.getElementById('ev-'+r.id);return true}});if(t)t.scrollIntoView()}});onLang(render);
 })();</script><script id="themejs">(function(){var r=document.documentElement,b=document.querySelector(".thm");if(!b)return;var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;function eff(){var t=r.getAttribute("data-theme");return t||(mq&&mq.matches?"dark":"light")}function ui(){var e=eff();b.setAttribute("data-eff",e);b.setAttribute("aria-pressed",e==="dark"?"true":"false")}ui();b.addEventListener("click",function(){var n=eff()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("dvor-theme",n)}catch(e){}ui()});if(mq){(mq.addEventListener?mq.addEventListener("change",ui):mq.addListener&&mq.addListener(ui))}})();</script><script src="analytics.js" defer></script>
 <script src="notice.js" defer></script>
 <script src="orari.js" defer></script>
