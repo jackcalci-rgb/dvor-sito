@@ -35,7 +35,7 @@
     '.vtabs button[aria-selected=true]{background:var(--green);color:var(--on-green);border-color:var(--green)}.vtabs button:hover{border-color:var(--gold);color:var(--ink)}.vtabs button[aria-selected=true]:hover{color:var(--on-green)}' +
     '#mescita-live{padding:2.4rem 0 4rem;background:var(--bg)}#mescita-live .wrap{max-width:900px;margin:0 auto;padding:0 1.2rem}#mescita-live h2{font:400 2.4rem var(--serif);color:var(--green);text-align:center;margin:0 0 .4rem}' +
     '#mescita-live .msub{text-align:center;color:var(--muted);margin:0 auto 1.6rem;max-width:56ch;line-height:1.6}#mescita-live h3{font:500 .78rem var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:2rem 0 .3rem;padding-bottom:.5rem;border-bottom:1px solid var(--line)}' +
-    '.mb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line)}.mb .mn{font:500 1.35rem var(--serif);color:var(--ink);line-height:1.2}.mb .mi{font-size:.85rem;color:var(--muted);margin-top:.25rem}' +
+    '.mt{display:flex;align-items:center;gap:1rem;min-width:0}.mimg{height:96px;width:44px;object-fit:contain;flex:0 0 44px;filter:drop-shadow(0 5px 7px rgba(0,0,0,.2))}.mb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line)}.mb .mn{font:500 1.35rem var(--serif);color:var(--ink);line-height:1.2}.mb .mi{font-size:.85rem;color:var(--muted);margin-top:.25rem}' +
     '.mb .mi b{color:var(--ink);font-weight:500}.mg{display:flex;gap:.18rem;flex-shrink:0}.mg svg{width:22px;height:34px}.mg .on .bowl{fill:var(--green);stroke:var(--green)}.mg .off .bowl{fill:none;stroke:var(--line)}.mg svg .st{stroke:var(--muted);fill:none;stroke-width:1.5}.mg .off .st{stroke:var(--line)}' +
     '.mlast{display:inline-block;margin-left:.5rem;padding:.05rem .5rem;border:1px solid var(--gold);color:var(--gold);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;vertical-align:.1em}.mupd{text-align:center;color:var(--muted);font-size:.78rem;margin-top:1.8rem}.mmsg{text-align:center;color:var(--muted);padding:2.5rem 0}' +
     '@media(max-width:560px){.mb{flex-direction:column;align-items:flex-start}#mescita-live h2{font-size:2rem}}';
@@ -48,6 +48,15 @@
   main.parentNode.insertBefore(panel, main);
   var timer = null;
   function glass(on) { return '<svg viewBox="0 0 22 34" class="' + (on ? 'on' : 'off') + '" aria-hidden="true"><path class="bowl" d="M4 2h14c.6 8-.6 15-7 15S3.400 10 4 2z" stroke-width="1.5"/><path class="st" d="M11 17v12M6 31h10"/></svg>'; }
+  function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  var IMG = null;
+  function imgFor(name) {
+    if (!IMG) {
+      IMG = {}; var M = window.DVOR_WMAP || {};
+      Object.keys(M).forEach(function (k) { var im = document.querySelector('li.wine[data-w="' + k + '"] img.wph'); if (im) IMG[norm(M[k])] = im.getAttribute('src'); });
+    }
+    return IMG[norm(name)] || '';
+  }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function plural(o, n) { return L.reduce(function (a, l) { a[l] = o[l][n === 1 ? 0 : 1]; return a; }, {}); }
   function render(j) {
@@ -61,8 +70,9 @@
       bs.forEach(function (b) {
         var p = Math.min(per, b.calici), r = per - p, gl = '';
         for (var i = 0; i < per; i++) gl += glass(i >= p);
-        h += '<div class="mb"><div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
-          T(plural(X.poured, p)) + ' · <b>' + r + '</b> ' + T(plural(X.left, r)) + '</div></div><div class="mg" role="img" aria-label="' + p + '/' + per + '">' + gl + '</div></div>';
+        var im = imgFor(b.name);
+        h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
+          T(plural(X.poured, p)) + ' · <b>' + r + '</b> ' + T(plural(X.left, r)) + '</div></div></div><div class="mg" role="img" aria-label="' + p + '/' + per + '">' + gl + '</div></div>';
       });
     });
     body.innerHTML = h || '<p class="mmsg">' + T(X.empty) + '</p>';
