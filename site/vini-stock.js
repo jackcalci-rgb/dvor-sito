@@ -9,7 +9,7 @@
     document.querySelectorAll('[data-off]').forEach(function (e) { e.hidden = false; e.style.display = ''; e.removeAttribute('data-off'); });
     document.querySelectorAll('.wg,section.course,#evidenza').forEach(function (e) { e.style.display = ''; });
     var q = {}; j.items.forEach(function (x) { var k = norm(x.name); q[k] = (q[k] || 0) + (+x.qty || 0); });
-    var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if (k in q && q[k] <= 0) off[w] = 1; });
+    var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if ((k in q && q[k] <= 0) || (!(k in q) && j.absent0)) off[w] = 1; });
     var n = Object.keys(off).length;
     document.querySelectorAll('[data-w]').forEach(function (e) { if (off[e.getAttribute('data-w')]) { e.hidden = true; e.style.display = 'none'; e.setAttribute('data-off', '1'); } });
     function vis(e) { return !e.hasAttribute('data-off'); }
