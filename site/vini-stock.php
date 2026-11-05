@@ -26,7 +26,7 @@ if (is_file($cache) && time() - filemtime($cache) < 45) { $c = json_decode((stri
 $items = null; $abs = false;
 $usr = (string)($cfg['mescita_user'] ?? ''); $pin = (string)($cfg['mescita_pin'] ?? '');
 if ($url !== '' && $usr !== '' && $pin !== '' && function_exists('curl_init')) {
-    $jar = tempnam(sys_get_temp_dir(), 'mc'); $o = [CURLOPT_COOKIEJAR => $jar, CURLOPT_COOKIEFILE => $jar, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_CONNECTTIMEOUT => 3];
+    $jar = tempnam(sys_get_temp_dir(), 'mc'); $o = [CURLOPT_COOKIEJAR => $jar, CURLOPT_COOKIEFILE => $jar, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30, CURLOPT_CONNECTTIMEOUT => 5];
     $ch = curl_init($url . '/api/login');
     curl_setopt_array($ch, $o + [CURLOPT_POST => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_POSTFIELDS => json_encode(['nome' => $usr, 'pin' => $pin])]);
     curl_exec($ch); $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
