@@ -71,7 +71,7 @@
     var all = j.bottles.filter(function (b) { return Math.min(per, b.calici) < per; }).map(function (b) {
       var f = info(b.name), gi = f.g;
       if (gi < 0) GR.forEach(function (g, i) { if (g.k.indexOf(b.cat) >= 0) gi = i; });
-      return { name: b.name, calici: b.calici, img: f.img, gi: gi };
+      return { name: b.name, calici: b.calici, img: f.img || (b.pid ? 'mescita-img.php?id=' + b.pid : ''), gi: gi };
     });
     GR.forEach(function (g, gi) {
       var bs = all.filter(function (b) { return b.gi === gi; });
@@ -81,7 +81,7 @@
         var p = Math.min(per, b.calici), r = per - p, gl = '';
         for (var i = 0; i < per; i++) gl += glass(i >= p);
         var im = b.img;
-        h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
+        h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy" onerror="this.style.visibility=\'hidden\'">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
           T(plural(X.poured, p)) + ' · <b>' + r + '</b> ' + T(plural(X.left, r)) + '</div></div></div><div class="mg" role="img" aria-label="' + p + '/' + per + '">' + gl + '</div></div>';
       });
     });
