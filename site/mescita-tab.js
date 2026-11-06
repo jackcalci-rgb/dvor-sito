@@ -35,7 +35,7 @@
     '.vtabs button[aria-selected=true]{background:var(--green);color:var(--on-green);border-color:var(--green)}.vtabs button:hover{border-color:var(--gold);color:var(--ink)}.vtabs button[aria-selected=true]:hover{color:var(--on-green)}' +
     '#mescita-live{padding:2.4rem 0 4rem;background:var(--bg)}#mescita-live .wrap{max-width:900px;margin:0 auto;padding:0 1.2rem}#mescita-live h2{font:400 2.4rem var(--serif);color:var(--green);text-align:center;margin:0 0 .4rem}' +
     '#mescita-live .msub{text-align:center;color:var(--muted);margin:0 auto 1.6rem;max-width:56ch;line-height:1.6}#mescita-live h3{font:500 .78rem var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:2rem 0 .3rem;padding-bottom:.5rem;border-bottom:1px solid var(--line)}' +
-    '.mt{display:flex;align-items:center;gap:1rem;min-width:0}.mimg{height:96px;width:44px;object-fit:contain;flex:0 0 44px;filter:drop-shadow(0 5px 7px rgba(0,0,0,.2))}.mb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line)}.mb .mn{font:500 1.35rem var(--serif);color:var(--ink);line-height:1.2}.mb .mi{font-size:.85rem;color:var(--muted);margin-top:.25rem}' +
+    '.mt{display:flex;align-items:center;gap:1rem;min-width:0}.mimg{height:120px;width:96px;object-fit:contain;flex:0 0 96px;filter:drop-shadow(0 5px 7px rgba(0,0,0,.2))}.mb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line)}.mb .mn{font:500 1.35rem var(--serif);color:var(--ink);line-height:1.2}.mb .mi{font-size:.85rem;color:var(--muted);margin-top:.25rem}' +
     '.mb .mi b{color:var(--ink);font-weight:500}.mg{display:flex;gap:.18rem;flex-shrink:0}.mg svg{width:22px;height:34px}.mg .on .bowl{fill:var(--green);stroke:var(--green)}.mg .off .bowl{fill:none;stroke:var(--line)}.mg svg .st{stroke:var(--muted);fill:none;stroke-width:1.5}.mg .off .st{stroke:var(--line)}' +
     '.mlast{display:inline-block;margin-left:.5rem;padding:.05rem .5rem;border:1px solid var(--gold);color:var(--gold);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;vertical-align:.1em}.mupd{text-align:center;color:var(--muted);font-size:.78rem;margin-top:1.8rem}.mmsg{text-align:center;color:var(--muted);padding:2.5rem 0}' +
     '@media(max-width:560px){.mb{flex-direction:column;align-items:flex-start}#mescita-live h2{font-size:2rem}}';
@@ -71,7 +71,7 @@
     var all = j.bottles.filter(function (b) { return Math.min(per, b.calici) < per; }).map(function (b) {
       var f = info(b.name), gi = f.g;
       if (gi < 0) GR.forEach(function (g, i) { if (g.k.indexOf(b.cat) >= 0) gi = i; });
-      return { name: b.name, calici: b.calici, img: f.img, gi: gi };
+      return { name: b.name, calici: b.calici, img: b.pid ? 'mescita-img.php?id=' + b.pid : f.img, fb: f.img, gi: gi };
     });
     GR.forEach(function (g, gi) {
       var bs = all.filter(function (b) { return b.gi === gi; });
@@ -81,7 +81,7 @@
         var p = Math.min(per, b.calici), r = per - p, gl = '';
         for (var i = 0; i < per; i++) gl += glass(i >= p);
         var im = b.img;
-        h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
+        h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy" data-fb="' + esc(b.fb || '') + '" onerror="var f=this.getAttribute(\'data-fb\');if(f&&this.getAttribute(\'src\')!==f){this.src=f}else{this.style.visibility=\'hidden\'}">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
           T(plural(X.poured, p)) + ' · <b>' + r + '</b> ' + T(plural(X.left, r)) + '</div></div></div><div class="mg" role="img" aria-label="' + p + '/' + per + '">' + gl + '</div></div>';
       });
     });

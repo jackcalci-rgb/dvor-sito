@@ -16,7 +16,7 @@ function clean($rows) {
         if (!is_array($r) || ($r['stato'] ?? 'aperta') !== 'aperta') continue;
         $n = trim(preg_replace('/^\s*\[[^\]]*\]\s*/', '', (string)($r['nome'] ?? '')));
         if ($n === '') continue;
-        $o[] = ['name' => $n, 'cat' => (string)($r['categoria'] ?? ''), 'calici' => max(0, (int)($r['calici'] ?? 0))];
+        $o[] = ['pid' => (int)($r['product_id'] ?? 0), 'name' => $n, 'cat' => (string)($r['categoria'] ?? ''), 'calici' => max(0, (int)($r['calici'] ?? 0))];
     }
     return $o;
 }

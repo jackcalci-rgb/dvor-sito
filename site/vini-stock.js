@@ -8,9 +8,19 @@
     if (!j || !j.ok || !j.items || !j.items.length) return;
     document.querySelectorAll('[data-off]').forEach(function (e) { e.hidden = false; e.style.display = ''; e.removeAttribute('data-off'); });
     document.querySelectorAll('.wg,section.course,#evidenza').forEach(function (e) { e.style.display = ''; });
-    var q = {}; j.items.forEach(function (x) { var k = norm(x.name); q[k] = (q[k] || 0) + (+x.qty || 0); });
-    var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if ((k in q && q[k] <= 0) || (!(k in q) && j.absent0)) off[w] = 1; });
+    var q = {}, nord = {}; j.items.forEach(function (x) { var k = norm(x.name); q[k] = (q[k] || 0) + (+x.qty || 0); if (x.ord === 0) nord[k] = 1; });
+    var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if ((k in q && (q[k] <= 0 || nord[k])) || (!(k in q) && j.absent0)) off[w] = 1; });
     var n = Object.keys(off).length;
+    /* foto delle bottiglie da Odoo (mescita-img.php); se manca resta quella del sito */
+    var ids = {}; j.items.forEach(function (x) { if (x.id) ids[norm(x.name)] = x.id; });
+    Object.keys(MAP).forEach(function (w) {
+      var id = ids[norm(MAP[w])]; if (!id) return;
+      var li = document.querySelector('li.wine[data-w="' + w + '"]'); if (!li || li.getAttribute('data-odoo')) return;
+      li.setAttribute('data-odoo', '1');
+      var url = 'mescita-img.php?id=' + id, im = li.querySelector('img.wph');
+      if (im) { var o = im.getAttribute('src'); im.addEventListener('error', function h() { im.removeEventListener('error', h); im.src = o; }); im.src = url; }
+      else { var nn = new Image(); nn.className = 'wph'; nn.alt = ''; nn.onload = function () { li.classList.add('wam'); li.insertBefore(nn, li.firstChild); }; nn.src = url; }
+    });
     document.querySelectorAll('[data-w]').forEach(function (e) { if (off[e.getAttribute('data-w')]) { e.hidden = true; e.style.display = 'none'; e.setAttribute('data-off', '1'); } });
     function vis(e) { return !e.hasAttribute('data-off'); }
     document.querySelectorAll('.wg').forEach(function (g) { if (!Array.prototype.some.call(g.querySelectorAll('li.wine'), vis)) g.style.display = 'none'; });

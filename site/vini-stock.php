@@ -21,7 +21,7 @@ function reply($items, $src, $abs = false) { echo json_encode(['ok' => true, 'it
 function fromInv($j) {
     if (!is_array($j) || !isset($j['righe']) || !is_array($j['righe'])) return null;
     $o = [];
-    foreach ($j['righe'] as $v) { if (is_array($v) && isset($v['nome'])) $o[] = ['name' => (string)$v['nome'], 'qty' => (float)($v['disponibili'] ?? 0)]; }
+    foreach ($j['righe'] as $v) { if (is_array($v) && isset($v['nome'])) $o[] = ['name' => (string)$v['nome'], 'qty' => (float)($v['disponibili'] ?? 0), 'id' => (int)($v['id'] ?? 0), 'ord' => array_key_exists('ordinabile', $v) ? ($v['ordinabile'] ? 1 : 0) : 1]; }
     return count($o) >= 10 ? $o : null;
 }
 if (is_file($cache) && time() - filemtime($cache) < 45) { $c = json_decode((string)file_get_contents($cache), true); if (!empty($c['items'])) reply($c['items'], 'cache', !empty($c['abs'])); }
