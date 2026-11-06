@@ -25,9 +25,9 @@ function trim_img($bin) {
 }
 function send($bin) {
     $t = (strncmp($bin, "\x89PNG", 4) === 0) ? 'image/png' : ((strncmp($bin, 'GIF', 3) === 0) ? 'image/gif' : ((strncmp($bin, 'RIFF', 4) === 0) ? 'image/webp' : 'image/jpeg'));
-    header('Content-Type: ' . $t); header('Cache-Control: public, max-age=86400'); echo $bin; exit;
+    header('Content-Type: ' . $t); header('Cache-Control: public, max-age=3600'); echo $bin; exit;
 }
-if (is_file($f) && time() - filemtime($f) < 7 * 86400) { $b = (string)file_get_contents($f); if ($b !== '') send($b); }
+if (is_file($f) && time() - filemtime($f) < 6 * 3600 + ($id % 36) * 600) { $b = (string)file_get_contents($f); if ($b !== '') send($b); }
 $cfg = is_file(__DIR__ . '/config.php') ? (require __DIR__ . '/config.php') : [];
 $mc = is_file(__DIR__ . '/data/mescita.php') ? (require __DIR__ . '/data/mescita.php') : [];
 if (is_array($mc)) $cfg = $mc + $cfg;
