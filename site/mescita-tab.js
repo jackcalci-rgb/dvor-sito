@@ -61,6 +61,7 @@
     }
     return IMG[norm(name)] || { img: '', g: -1 };
   }
+  function cleanName(n) { return String(n || '').replace(/\s*[-\u2013]?\s*Alc\.?\s*[\d.,]+\s*%/i, '').replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '').trim(); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function plural(o, n) { return L.reduce(function (a, l) { a[l] = o[l][n === 1 ? 0 : 1]; return a; }, {}); }
   function render(j) {
@@ -71,7 +72,7 @@
     var all = j.bottles.filter(function (b) { return Math.min(per, b.calici) < per; }).map(function (b) {
       var f = info(b.name), gi = f.g;
       if (gi < 0) GR.forEach(function (g, i) { if (g.k.indexOf(b.cat) >= 0) gi = i; });
-      return { name: b.name, calici: b.calici, img: b.pid ? 'mescita-img.php?id=' + b.pid : f.img, fb: f.img, gi: gi };
+      return { name: cleanName(b.name), calici: b.calici, img: b.pid ? 'mescita-img.php?id=' + b.pid : f.img, fb: f.img, gi: gi };
     });
     GR.forEach(function (g, gi) {
       var bs = all.filter(function (b) { return b.gi === gi; });
