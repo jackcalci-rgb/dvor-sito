@@ -49,13 +49,17 @@
   var timer = null;
   function glass(on) { return '<svg viewBox="0 0 22 34" class="' + (on ? 'on' : 'off') + '" aria-hidden="true"><path class="bowl" d="M4 2h14c.6 8-.6 15-7 15S3.400 10 4 2z" stroke-width="1.5"/><path class="st" d="M11 17v12M6 31h10"/></svg>'; }
   function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
-  var IMG = null;
-  function imgFor(name) {
+  var IMG = null, SEC = { bol: 0, bia: 1, mac: 1, ros: 2 };
+  function info(name) {
     if (!IMG) {
       IMG = {}; var M = window.DVOR_WMAP || {};
-      Object.keys(M).forEach(function (k) { var im = document.querySelector('li.wine[data-w="' + k + '"] img.wph'); if (im) IMG[norm(M[k])] = im.getAttribute('src'); });
+      Object.keys(M).forEach(function (k) {
+        var li = document.querySelector('li.wine[data-w="' + k + '"]'); if (!li) return;
+        var im = li.querySelector('img.wph'), sc = li.closest('section.course');
+        IMG[norm(M[k])] = { img: im ? im.getAttribute('src') : '', g: sc && SEC[sc.id] !== undefined ? SEC[sc.id] : -1 };
+      });
     }
-    return IMG[norm(name)] || '';
+    return IMG[norm(name)] || { img: '', g: -1 };
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function plural(o, n) { return L.reduce(function (a, l) { a[l] = o[l][n === 1 ? 0 : 1]; return a; }, {}); }
@@ -63,14 +67,20 @@
     var body = document.getElementById('ml-body'), up = document.getElementById('ml-upd');
     if (!j || !j.ok) { body.innerHTML = '<p class="mmsg">' + T(X.err) + '</p>'; up.textContent = ''; return; }
     var per = j.per || 7, h = '';
-    GR.forEach(function (g) {
-      var bs = j.bottles.filter(function (b) { return g.k.indexOf(b.cat) >= 0; });
+    /* il gruppo segue la carta vini (se il vino c'e'), altrimenti la categoria scelta in Mescita; le bottiglie finite non si mostrano */
+    var all = j.bottles.filter(function (b) { return Math.min(per, b.calici) < per; }).map(function (b) {
+      var f = info(b.name), gi = f.g;
+      if (gi < 0) GR.forEach(function (g, i) { if (g.k.indexOf(b.cat) >= 0) gi = i; });
+      return { name: b.name, calici: b.calici, img: f.img, gi: gi };
+    });
+    GR.forEach(function (g, gi) {
+      var bs = all.filter(function (b) { return b.gi === gi; });
       if (!bs.length) return;
       h += '<h3>' + T(g.t) + '</h3>';
       bs.forEach(function (b) {
         var p = Math.min(per, b.calici), r = per - p, gl = '';
         for (var i = 0; i < per; i++) gl += glass(i >= p);
-        var im = imgFor(b.name);
+        var im = b.img;
         h += '<div class="mb"><div class="mt">' + (im ? '<img class="mimg" src="' + esc(im) + '" alt="" loading="lazy">' : '<span class="mimg"></span>') + '<div><div class="mn">' + esc(b.name) + (r === 1 ? '<span class="mlast">' + T(X.last) + '</span>' : '') + '</div><div class="mi"><b>' + p + '</b> ' +
           T(plural(X.poured, p)) + ' · <b>' + r + '</b> ' + T(plural(X.left, r)) + '</div></div></div><div class="mg" role="img" aria-label="' + p + '/' + per + '">' + gl + '</div></div>';
       });
