@@ -4,6 +4,13 @@
 (function () {
   var MAP = window.DVOR_WMAP; if (!MAP || !window.fetch) return;
   function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function clean(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').replace(/\s*[-\u2013]?\s*Alc\.?\s*[\d.,]+\s*%/i, '').replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '').trim(); }
+  function esc(t) { return t.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function setName(el, prod, full) {
+    var p = prod || '';
+    if (p && full.toLowerCase().indexOf(p.toLowerCase()) === 0 && full.length > p.length) el.innerHTML = '<b>' + esc(full.slice(0, p.length)) + '</b> ' + esc(full.slice(p.length).replace(/^[\s-]+/, ''));
+    else el.textContent = full;
+  }
   function run() { fetch('vini-stock.php', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
     if (!j || !j.ok || !j.items || !j.items.length) return;
     document.querySelectorAll('[data-off]').forEach(function (e) { e.hidden = false; e.style.display = ''; e.removeAttribute('data-off'); });
@@ -11,6 +18,15 @@
     var q = {}, nord = {}; j.items.forEach(function (x) { var k = norm(x.name); q[k] = (q[k] || 0) + (+x.qty || 0); if (x.ord === 0) nord[k] = 1; });
     var off = {}; Object.keys(MAP).forEach(function (w) { var k = norm(MAP[w]); if ((k in q && (q[k] <= 0 || nord[k])) || (!(k in q) && j.absent0)) off[w] = 1; });
     var n = Object.keys(off).length;
+    /* nomi: quelli di Odoo, senza codice e gradazione */
+    var raw = {}; j.items.forEach(function (x) { raw[norm(x.name)] = x.name; });
+    Object.keys(MAP).forEach(function (w) {
+      var nm = raw[norm(MAP[w])]; if (!nm) return; var full = clean(nm); if (!full) return;
+      var li = document.querySelector('li.wine[data-w="' + w + '"]');
+      if (li) { var wn = li.querySelector('.wn'); if (wn) setName(wn, li.getAttribute('data-c'), full); var im0 = li.querySelector('img.wph'); if (im0) im0.alt = full; }
+      var wx = document.querySelector('.wx[data-w="' + w + '"] .wx-name');
+      if (wx) { var pb = wx.querySelector('b'); setName(wx, pb ? pb.textContent : '', full); }
+    });
     /* foto delle bottiglie da Odoo (mescita-img.php); se manca resta quella del sito */
     var ids = {}; j.items.forEach(function (x) { if (x.id) ids[norm(x.name)] = x.id; });
     Object.keys(MAP).forEach(function (w) {
