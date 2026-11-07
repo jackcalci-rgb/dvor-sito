@@ -48,7 +48,7 @@
   main.parentNode.insertBefore(panel, main);
   var timer = null;
   function glass(on) { return '<svg viewBox="0 0 22 34" class="' + (on ? 'on' : 'off') + '" aria-hidden="true"><path class="bowl" d="M4 2h14c.6 8-.6 15-7 15S3.400 10 4 2z" stroke-width="1.5"/><path class="st" d="M11 17v12M6 31h10"/></svg>'; }
-  function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function norm(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).sort().join(' '); }
   var IMG = null, SEC = { bol: 0, bia: 1, mac: 1, ros: 2 };
   function info(name) {
     if (!IMG) {

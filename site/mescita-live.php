@@ -9,7 +9,7 @@ if (is_array($mc)) $cfg = $mc + $cfg;
 $url = rtrim((string)($cfg['mescita_url'] ?? ''), '/'); $usr = (string)($cfg['mescita_user'] ?? ''); $pin = (string)($cfg['mescita_pin'] ?? '');
 $dir = __DIR__ . '/data'; $cache = $dir . '/mescita-live.json'; $per = 7;
 function out($b, $src, $at) { echo json_encode(['ok' => true, 'bottles' => $b, 'per' => 7, 'source' => $src, 'at' => $at], JSON_UNESCAPED_UNICODE); exit; }
-function nk($n) { $n = preg_replace('/^\s*\[[^\]]*\]\s*/', '', (string)$n); $n = function_exists('iconv') ? (@iconv('UTF-8', 'ASCII//TRANSLIT', $n) ?: $n) : $n; return trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower($n))); }
+function nk($n) { $n = preg_replace('/^\s*\[[^\]]*\]\s*/', '', (string)$n); $n = function_exists('iconv') ? (@iconv('UTF-8', 'ASCII//TRANSLIT', $n) ?: $n) : $n; $w = array_values(array_unique(array_filter(explode(' ', preg_replace('/[^a-z0-9]+/', ' ', strtolower($n)))))); sort($w); return implode(' ', $w); }
 /* La foto si prende dal prodotto ATTIVO con lo stesso nome (inventario di vini-stock.php): una bottiglia aperta con un vecchio prodotto archiviato non usa la sua foto. */
 function activeIds($dir) {
     $m = []; $f = $dir . '/vini-stock.json';
