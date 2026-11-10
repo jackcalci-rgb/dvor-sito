@@ -39,7 +39,7 @@
     var s = document.createElement('script'); s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID; document.head.appendChild(s);
   }
-  function load() { loadFB(); if (!GA_ID) return; boot(); gtag('consent', 'update', { analytics_storage: 'granted' }); }
+  function load() { loadFB(); if (!GA_ID) return; boot(); gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted' }); }
 
   function drop() {
     dropFB();
@@ -90,7 +90,7 @@
     d.innerHTML = '<div style="max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;align-items:center;justify-content:space-between"><p style="margin:0;flex:1 1 360px">' + spans('t') + ' <a href="privacy.html" style="text-decoration:underline">' + spans('p') + '</a></p><div style="display:flex;gap:.6rem"><button type="button" id="dvor-cc-n" style="cursor:pointer;background:transparent;color:inherit;border:1px solid currentColor;padding:.6rem 1.2rem;font:inherit;letter-spacing:.08em">' + spans('r') + '</button><button type="button" id="dvor-cc-y" style="cursor:pointer;background:var(--green,#7A2E22);color:var(--on-green,#FBF3E6);border:1px solid var(--green,#7A2E22);padding:.6rem 1.2rem;font:inherit;letter-spacing:.08em">' + spans('a') + '</button></div></div>';
     document.body.appendChild(d);
     d.querySelector('#dvor-cc-y').onclick = function () { set('granted'); d.remove(); load(); };
-    d.querySelector('#dvor-cc-n').onclick = function () { set('denied'); d.remove(); if (GA_ID) { boot(); gtag('consent', 'update', { analytics_storage: 'denied' }); } drop(); };
+    d.querySelector('#dvor-cc-n').onclick = function () { set('denied'); d.remove(); if (GA_ID) { boot(); gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied' }); } drop(); };
   }
   window.dvorCookies = function () { var b = document.getElementById('dvor-cc'); if (b) b.remove(); banner(); };
   function link() {
