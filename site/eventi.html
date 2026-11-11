@@ -186,6 +186,14 @@ header.top .hl{display:flex;gap:.1rem;margin-left:1.25rem}
 .evs-th img{-webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent)}
 .leaf svg .v{fill:none;stroke:rgba(60,25,5,.35);stroke-width:.25}
 </style>
+<style id="evx-css">
+.evx{position:relative;overflow:hidden}
+.evx>.evrib{position:absolute;z-index:5;top:1.6rem;left:-3.8rem;width:14rem;transform:rotate(-35deg);background:#B3261E;color:#fff;text-align:center;font:500 .78rem/2.3 var(--sans,"Jost",Arial,sans-serif);letter-spacing:.28em;text-transform:uppercase;box-shadow:0 3px 12px rgba(0,0,0,.3);pointer-events:none}
+.evfeat.evx>.evrib{top:2.2rem;left:-4.4rem;width:18rem;font-size:.9rem;line-height:2.6}
+.evx .evimg{filter:grayscale(.55)}
+.evx h2,.evx h3{text-decoration:line-through;text-decoration-color:#B3261E;text-decoration-thickness:2px}
+@media (max-width:820px){.evfeat.evx>.evrib{top:1.5rem;left:-3.8rem;width:14rem;font-size:.78rem;line-height:2.3}}
+</style>
 </head>
 <body>
 <header class="top" id="top"><div class="in">
@@ -495,7 +503,7 @@ function merge(site,pren){var out=site.slice();
   pren.forEach(function(p){if(!p||!p.date)return;var s=null;for(var i=0;i<out.length;i++)if(!out[i]._p&&same(out[i],p)){s=out[i];break}
     if(!s){var n=Object.assign({},p);n._p=1;out.push(n);return}
     ['title_it','title_en','desc_it','desc_en','price','time','flyer'].forEach(function(k){if(!s[k]&&p[k])s[k]=p[k]});
-    if(!s.link)s.link=p.link;s.page=p.page;s.alias=p.id;s._p=1});
+    if(p.cancelled)s.cancelled=1;if(!s.link)s.link=p.link;s.page=p.page;s.alias=p.id;s._p=1});
   return out}
 function getJ(u,fb){return fetch(u,{cache:'no-cache'}).then(function(r){return r.ok?r.json():fb}).catch(function(){return fb})}
 function load(cb){Promise.all([getJ('data/events.json',SEED),Promise.race([getJ(PREN,[]),new Promise(function(ok){setTimeout(function(){ok([])},5000)})])]).then(function(x){
@@ -503,21 +511,23 @@ function load(cb){Promise.all([getJ('data/events.json',SEED),Promise.race([getJ(
   var t=today(),ev=(Array.isArray(j)?j:[]).filter(function(r){return r&&/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&(r.title_it||r.title_en)});
   var up=ev.filter(function(r){return r.date>=t}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:((a.time||'')<(b.time||'')?-1:1)});
   var past=ev.filter(function(r){return r.date<t}).sort(function(a,b){return a.date<b.date?1:-1});cb(up,past)})}
+var RIB={it:'Annullato',en:'Cancelled',de:'Abgesagt',sl:'Odpovedano',nl:'Geannuleerd'};
+function rib(){return el('span','evrib',RIB[L()]||RIB.it)}
 function onLang(f){new MutationObserver(f).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']})}
 
 var MORE={it:['Leggi tutto','Mostra meno'],en:['Read more','Show less'],de:['Mehr lesen','Weniger anzeigen'],sl:['Preberi več','Pokaži manj'],nl:['Lees meer','Minder tonen']};
 function moreBtn(d){var m=MORE[L()]||MORE.it,x=el('button','evmore',m[0]);x.type='button';x.setAttribute('aria-expanded','false');
   x.addEventListener('click',function(){var o=d.classList.toggle('open');x.textContent=o?m[1]:m[0];x.setAttribute('aria-expanded',String(o))});return x}
-function card(r,past){var c=el('article','evc'+(past?' evpast':''));c.id='ev-'+r.id;c.appendChild(flyer(r,false));var b=el('div','evb');
-  if(!past)b.appendChild(el('span','evcd',cd(r.date)));
+function card(r,past){var c=el('article','evc'+(past?' evpast':'')+(r.cancelled?' evx':''));if(r.cancelled)c.appendChild(rib());c.id='ev-'+r.id;c.appendChild(flyer(r,false));var b=el('div','evb');
+  if(!past&&!r.cancelled)b.appendChild(el('span','evcd',cd(r.date)));
   b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));var d=el('div','evd');d.appendChild(paras(dsc(r)));b.appendChild(d);if(dsc(r).length>140)b.appendChild(moreBtn(d));
   if(r.price)b.appendChild(el('span','evpr',r.price));
-  var bt=el('div','evbt');if(!past){var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a)}var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);if(bt.children.length)b.appendChild(bt);c.appendChild(b);return c}
-function featured(r){var f=el('article','evfeat');f.id='ev-'+r.id;var l=el('div');l.appendChild(flyer(r,true));var x=el('div');
-  var top=el('div');top.appendChild(el('span','evtag',T('next')));top.appendChild(el('span','evcd',cd(r.date)));x.appendChild(top);
+  var bt=el('div','evbt');if(!past&&!r.cancelled){var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a)}var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);if(bt.children.length)b.appendChild(bt);c.appendChild(b);return c}
+function featured(r){var f=el('article','evfeat'+(r.cancelled?' evx':''));if(r.cancelled)f.appendChild(rib());f.id='ev-'+r.id;var l=el('div');l.appendChild(flyer(r,true));var x=el('div');
+  var top=el('div');top.appendChild(el('span','evtag',T('next')));if(!r.cancelled)top.appendChild(el('span','evcd',cd(r.date)));x.appendChild(top);
   x.appendChild(el('h2',null,ttl(r)));x.appendChild(el('p','evdt',when(r)));var d=el('div','evd');d.appendChild(paras(dsc(r)));x.appendChild(d);
   if(r.price)x.appendChild(el('span','evpr',r.price));
-  var bt=el('div','evbt');var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a);var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);x.appendChild(bt);f.appendChild(l);f.appendChild(x);return f}
+  var bt=el('div','evbt');var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';if(!r.cancelled)bt.appendChild(a);var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);x.appendChild(bt);f.appendChild(l);f.appendChild(x);return f}
 var UP=[],PAST=[];
 function render(){var nx=document.getElementById('ev-next'),ug=document.getElementById('ev-up-g'),pg=document.getElementById('ev-past');
   nx.textContent='';ug.textContent='';pg.textContent='';
@@ -526,13 +536,14 @@ function render(){var nx=document.getElementById('ev-next'),ug=document.getEleme
   PAST.slice(0,9).forEach(function(r){pg.appendChild(card(r,true))});
   var h=document.getElementById('ev-upt');if(h)h.textContent=T('other');var ph=document.getElementById('ev-pastt');if(ph)ph.textContent=T('past');var em=document.getElementById('ev-emt');if(em)em.textContent=T('empty')}
 function ld(){var old=document.getElementById('ev-ld');if(old)old.remove();if(!UP.length)return;var o=location.origin+location.pathname.replace(/[^\/]*$/,'');
-  var g=UP.slice(0,10).map(function(r){var e={'@type':'Event',name:r.title_it||r.title_en,startDate:r.date+(r.time?'T'+r.time+':00':''),eventStatus:'https://schema.org/EventScheduled',eventAttendanceMode:'https://schema.org/OfflineEventAttendanceMode',
+  var g=UP.slice(0,10).map(function(r){var e={'@type':'Event',name:r.title_it||r.title_en,startDate:r.date+(r.time?'T'+r.time+':00':''),eventStatus:r.cancelled?'https://schema.org/EventCancelled':'https://schema.org/EventScheduled',eventAttendanceMode:'https://schema.org/OfflineEventAttendanceMode',
     location:{'@type':'Place',name:'Osteria Enoteca Dvor',address:{'@type':'PostalAddress',streetAddress:'Via Castello 5',addressLocality:'San Floriano del Collio',postalCode:'34070',addressCountry:'IT'}},
     description:r.desc_it||r.desc_en||undefined,organizer:{'@type':'Organization',name:'Osteria Enoteca Dvor'}};if(r.flyer)e.image=[/^https?:/.test(r.flyer)?r.flyer:o+upf(r.flyer)];if(r.price)e.offers={'@type':'Offer',description:r.price,url:BOOK};return e});
   var s=document.createElement('script');s.type='application/ld+json';s.id='ev-ld';s.textContent=JSON.stringify(g);document.head.appendChild(s)}
 load(function(u,p){UP=u;PAST=p;render();ld();if(location.hash){var hs=location.hash.slice(1),t=document.getElementById(hs);
   if(!t)UP.concat(PAST).some(function(r){if('ev-'+r.alias===hs){t=document.getElementById('ev-'+r.id);return true}});if(t)t.scrollIntoView()}});onLang(render);
 })();</script><script id="themejs">(function(){var r=document.documentElement,b=document.querySelector(".thm");if(!b)return;var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;function eff(){var t=r.getAttribute("data-theme");return t||(mq&&mq.matches?"dark":"light")}function ui(){var e=eff();b.setAttribute("data-eff",e);b.setAttribute("aria-pressed",e==="dark"?"true":"false")}ui();b.addEventListener("click",function(){var n=eff()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("dvor-theme",n)}catch(e){}ui()});if(mq){(mq.addEventListener?mq.addEventListener("change",ui):mq.addListener&&mq.addListener(ui))}})();</script><script src="analytics.js" defer></script>
+<script src="avviso-eventi.js" defer></script>
 <script src="notice.js" defer></script>
 <script src="orari.js" defer></script>
 </body>
