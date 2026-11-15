@@ -7,7 +7,8 @@
   function clean(n) { return String(n || '').replace(/^\s*\[[^\]]*\]\s*/, '').replace(/\s*[-\u2013]?\s*Alc\.?\s*[\d.,]+\s*%/i, '').replace(/\s{2,}/g, ' ').replace(/[\s-]+$/, '').trim(); }
   function esc(t) { return t.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function setName(el, prod, full) {
-    var p = prod || '';
+    var p = prod || '', sf = p && full.toLowerCase().slice(-(p.length + 3)) === ' - ' + p.toLowerCase(); if (sf) full = full.slice(0, full.length - p.length - 3).trim(), el.innerHTML = '<b>' + esc(p) + '</b> ' + esc(full);
+    if (sf) return;
     if (p && full.toLowerCase().indexOf(p.toLowerCase()) === 0 && full.length > p.length) el.innerHTML = '<b>' + esc(full.slice(0, p.length)) + '</b> ' + esc(full.slice(p.length).replace(/^[\s-]+/, ''));
     else el.textContent = full;
   }
