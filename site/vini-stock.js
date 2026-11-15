@@ -37,6 +37,24 @@
       if (im) { var o = im.getAttribute('src'); im.addEventListener('error', function h() { im.removeEventListener('error', h); im.src = o; }); im.src = url; }
       else { var nn = new Image(); nn.className = 'wph'; nn.alt = ''; nn.onload = function () { li.classList.add('wam'); li.insertBefore(nn, li.firstChild); }; nn.src = url; }
     });
+    /* vini nuovi in Odoo che la carta non conosce: sezione automatica "Novita' in carta" */
+    (function () {
+      var known = {}; Object.keys(MAP).forEach(function (w) { known[norm(MAP[w])] = 1; });
+      var okc = /vin|bollic|spum|champ|bianc|ross|macer|rosat|metodo|prosecco|franciacorta|orange|dolci|passit/i, noc = /amar|liquor|distill|grappa|birr|acqua|bibit|caff|cocktail|cibo|food|soft|gin|vodka|rum|whisk/i;
+      var nu = j.items.filter(function (x) { return !known[norm(x.name)] && (+x.qty || 0) > 0 && x.ord !== 0 && x.id && (!x.cat || (okc.test(x.cat) && !noc.test(x.cat))) && /^\s*\[/.test(x.name); });
+      var old = document.getElementById('nuovi'); if (old) old.remove();
+      if (!nu.length) return;
+      nu.sort(function (a, b) { return clean(a.name).localeCompare(clean(b.name), 'it'); });
+      function L(t) { return ['it', 'en', 'de', 'sl', 'nl'].map(function (l, i) { return '<span class="' + l + '" lang="' + l + '">' + t[i] + '</span>'; }).join(''); }
+      var li = nu.map(function (x) {
+        var full = clean(x.name), pr = ''; var m = full.match(/^(.*?)\s+-\s+([^-]+)$/); var prod = m ? m[2].trim() : '', wine = m ? m[1].trim() : full;
+        var p = +x.price || 0; if (p > 0) pr = '<span class="wp">€&nbsp;' + (p === Math.floor(p) ? p : p.toFixed(2).replace('.', ',')) + '</span>';
+        return '<li class="wine wam" data-c="' + esc(prod) + '"><img class="wph" src="mescita-img.php?id=' + x.id + '" alt="' + esc(full) + '" loading="lazy"><div class="wamb"><div class="wrow"><span class="wn">' + (prod ? '<b>' + esc(prod) + '</b> ' : '') + esc(wine) + '</span><span class="wf" aria-hidden="true"></span>' + pr + '</div></div></li>';
+      }).join('');
+      var sec = document.createElement('section'); sec.className = 'course'; sec.id = 'nuovi';
+      sec.innerHTML = '<h2>' + L(['Novità in carta', 'New on the list', 'Neu auf der Karte', 'Novo na karti', 'Nieuw op de kaart']) + '</h2><div class="wgroups"><div class="wg"><ul class="wlist">' + li + '</ul></div></div>';
+      var anchor = document.getElementById('amari'); if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(sec, anchor);
+    })();
     document.querySelectorAll('[data-w]').forEach(function (e) { if (off[e.getAttribute('data-w')]) { e.hidden = true; e.style.display = 'none'; e.setAttribute('data-off', '1'); } });
     function vis(e) { return !e.hasAttribute('data-off'); }
     document.querySelectorAll('.wg').forEach(function (g) { if (!Array.prototype.some.call(g.querySelectorAll('li.wine'), vis)) g.style.display = 'none'; });
