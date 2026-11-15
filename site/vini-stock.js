@@ -48,7 +48,7 @@
       function L(t) { return ['it', 'en', 'de', 'sl', 'nl'].map(function (l, i) { return '<span class="' + l + '" lang="' + l + '">' + t[i] + '</span>'; }).join(''); }
       var li = nu.map(function (x) {
         var full = clean(x.name), pr = ''; var m = full.match(/^(.*?)\s+-\s+([^-]+)$/); var prod = m ? m[2].trim() : '', wine = m ? m[1].trim() : full;
-        var p = +x.price || 0; if (p > 0) pr = '<span class="wp">€&nbsp;' + (p === Math.floor(p) ? p : p.toFixed(2).replace('.', ',')) + '</span>';
+        var p = 0; /* in Odoo il prezzo e il costo d acquisto, non il prezzo di carta */ if (p > 0) pr = '<span class="wp">€&nbsp;' + (p === Math.floor(p) ? p : p.toFixed(2).replace('.', ',')) + '</span>';
         return '<li class="wine wam" data-c="' + esc(prod) + '"><img class="wph" src="mescita-img.php?id=' + x.id + '" alt="' + esc(full) + '" loading="lazy"><div class="wamb"><div class="wrow"><span class="wn">' + (prod ? '<b>' + esc(prod) + '</b> ' : '') + esc(wine) + '</span><span class="wf" aria-hidden="true"></span>' + pr + '</div></div></li>';
       }).join('');
       var sec = document.createElement('section'); sec.className = 'course'; sec.id = 'nuovi';
