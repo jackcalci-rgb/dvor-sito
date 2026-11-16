@@ -13,3 +13,4 @@ DirectoryIndex index.html index.php
   ExpiresByType image/png "access plus 6 months"
   ExpiresByType text/css "access plus 1 month"
 </IfModule>
+
