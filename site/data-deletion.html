@@ -2,6 +2,7 @@
 <html lang="it" data-lang="it">
 <head><script id="themeearly">try{var t=localStorage.getItem("dvor-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta charset="utf-8">
+<style>.gw .hero .wrap>*,.gw .phero .wrap>*{visibility:hidden}</style><script>(function(r){if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;r.classList.add("gw");setTimeout(function(){r.classList.remove("gw")},2500)})(document.documentElement)</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cancellazione dei dati | Osteria Enoteca Dvor</title>
 <meta name="description" content="Come chiedere la cancellazione dei propri dati personali all’Osteria Enoteca Dvor.">
@@ -406,5 +407,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
 window.addEventListener('resize',function(){if(window.innerWidth>1000)set(false)});
 })();</script><script id="themejs">(function(){var r=document.documentElement,b=document.querySelector(".thm");if(!b)return;var mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;function eff(){var t=r.getAttribute("data-theme");return t||(mq&&mq.matches?"dark":"light")}function ui(){var e=eff();b.setAttribute("data-eff",e);b.setAttribute("aria-pressed",e==="dark"?"true":"false")}ui();b.addEventListener("click",function(){var n=eff()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("dvor-theme",n)}catch(e){}ui()});if(mq){(mq.addEventListener?mq.addEventListener("change",ui):mq.addListener&&mq.addListener(ui))}})();</script><script src="analytics.js" defer></script>
 <script src="orari.js" defer></script>
+<script src="vendor/gsap.min.js" defer></script><script src="vendor/ScrollTrigger.min.js" defer></script><script src="anim.js" defer></script>
 </body>
 </html>
