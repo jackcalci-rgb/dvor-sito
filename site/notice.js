@@ -2,7 +2,7 @@
    Per cambiarlo o spegnerlo modifica solo le righe qui sotto.
    Compare una volta per visita, solo nel periodo START-END (inclusi). Non compare sulla pagina del calcolatore. */
 (function () {
-  var START = '2026-10-31', END = '2026-12-23', KEY = 'dvor-notice-natale26', HREF = 'pranzi-cene-di-natale.html#natale-calc';
+  var START = '2026-10-31', END = '2026-10-30', /* spento il 21/11/2026: per riaccenderlo rimetti END a una data futura */ KEY = 'dvor-notice-natale26', HREF = 'pranzi-cene-di-natale.html#natale-calc';
   var today = new Date(); var iso = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
   if (iso < START || iso > END) return;
   if (/pranzi-cene-di-natale/.test(location.pathname)) return;
