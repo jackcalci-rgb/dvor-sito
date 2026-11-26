@@ -405,6 +405,26 @@ window.dvx=function(en,it){var l=document.documentElement.getAttribute('data-lan
 .evx h2,.evx h3{text-decoration:line-through;text-decoration-color:#B3261E;text-decoration-thickness:2px}
 @media (max-width:820px){.evfeat.evx>.evrib{top:1.5rem;left:-3.8rem;width:14rem;font-size:.78rem;line-height:2.3}}
 </style>
+<style id="evg-css">
+.evhome .evc .evimg,.evhome .evc .evimg.wide{aspect-ratio:auto!important;object-fit:contain!important;height:auto!important}
+.evg{position:relative}
+.evg-t{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.evg-t::-webkit-scrollbar{display:none}
+.evg-s{flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;background:var(--alt,#f1ebe0)}
+.evg-s .evimg{width:100%;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important}
+.evg-a{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:2.4rem;height:2.4rem;border-radius:50%;border:0;background:rgba(19,16,14,.55);color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;padding:0}
+.evg-a.p{left:.5rem}.evg-a.n{right:.5rem}.evg-a[hidden]{display:none}
+.evg-d{display:flex;gap:.5rem;justify-content:center;padding:.6rem 0 .1rem}
+.evg-d button{width:.65rem;height:.65rem;border-radius:50%;border:1px solid var(--gold,#b08d57);background:transparent;padding:0;cursor:pointer}
+.evg-d button.on{background:var(--gold,#b08d57)}
+.evg-c{position:absolute;top:.5rem;right:.5rem;z-index:4;background:rgba(19,16,14,.65);color:#fff;font-size:.72rem;letter-spacing:.06em;border-radius:999px;padding:.1rem .55rem}
+</style>
+<style id="evs-css">
+.evsum{margin:0 0 .9rem;font-size:1rem;line-height:1.6;color:var(--ink,inherit)}
+.evc .evd.evhid:not(.open){display:none!important}
+.evhome .evc .evsum{margin:.2rem 0 0;font-size:.95rem;color:var(--muted,inherit)}
+.evfeat .evsum{font-size:1.15rem;line-height:1.55}
+</style>
 </head>
 <body>
 <header class="top" id="top"><div class="in">
@@ -1038,7 +1058,7 @@ function same(a,b){if(a.date!==b.date)return false;var x=nrm(a.title_it||a.title
 function merge(site,pren){var out=site.slice();
   pren.forEach(function(p){if(!p||!p.date)return;var s=null;for(var i=0;i<out.length;i++)if(!out[i]._p&&same(out[i],p)){s=out[i];break}
     if(!s){var n=Object.assign({},p);n._p=1;out.push(n);return}
-    ['title_it','title_en','desc_it','desc_en','price','time','flyer'].forEach(function(k){if(!s[k]&&p[k])s[k]=p[k]});
+    ['title_it','title_en','desc_it','desc_en','price','time','flyer','summary_it','summary_en'].forEach(function(k){if(!s[k]&&p[k])s[k]=p[k]});if(p.flyers&&p.flyers.length>1&&p.flyers.length>(s.flyer2?2:1)&&!(s.flyers&&s.flyers.length>1)){s.flyers=p.flyers;s.flyer=p.flyers[0]}
     if(p.cancelled)s.cancelled=1;if(!s.link)s.link=p.link;s.page=p.page;s.alias=p.id;s._p=1});
   return out}
 function getJ(u,fb){return fetch(u,{cache:'no-cache'}).then(function(r){return r.ok?r.json():fb}).catch(function(){return fb})}
@@ -1049,11 +1069,24 @@ function load(cb){Promise.all([getJ('data/events.json',SEED),Promise.race([getJ(
   var past=ev.filter(function(r){return r.date<t}).sort(function(a,b){return a.date<b.date?1:-1});cb(up,past)})}
 var RIB={it:'Annullato',en:'Cancelled',de:'Abgesagt',sl:'Odpovedano',nl:'Geannuleerd'};
 function rib(){return el('span','evrib',RIB[L()]||RIB.it)}
+function evFl(r){var a=(r.flyers&&r.flyers.length>1)?r.flyers:(r.flyer&&r.flyer2?[r.flyer,r.flyer2]:(r.flyer?[r.flyer]:[]));return a.filter(function(u,i){return u&&a.indexOf(u)===i})}
+function evGal(r,lb){var FL=evFl(r),n=FL.length,cur=0,w=el('div','evg'),tr=el('div','evg-t'),ds=el('div','evg-d'),bs=[],cnt=el('span','evg-c','1/'+n);
+  var stop=function(e){e.preventDefault();e.stopPropagation()};
+  var go=function(k){k=Math.max(0,Math.min(n-1,k));tr.scrollTo({left:k*tr.clientWidth,behavior:'smooth'})};
+  FL.forEach(function(u,k){var sl=el('div','evg-s'),i=document.createElement('img');i.className='evimg';i.src=upf(u);i.alt=ttl(r)+' ('+(k+1)+'/'+n+')';i.loading='lazy';
+    if(lb)i.addEventListener('click',function(){lightbox(upf(u))});sl.appendChild(i);tr.appendChild(sl);
+    var d=document.createElement('button');d.type='button';d.setAttribute('aria-label',(k+1)+'/'+n);d.addEventListener('click',function(e){stop(e);go(k)});ds.appendChild(d);bs.push(d)});
+  var pv=el('button','evg-a p','‹'),nx=el('button','evg-a n','›');pv.type=nx.type='button';pv.setAttribute('aria-label','Prev');nx.setAttribute('aria-label','Next');
+  pv.addEventListener('click',function(e){stop(e);go(cur-1)});nx.addEventListener('click',function(e){stop(e);go(cur+1)});
+  var upd=function(){cur=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));bs.forEach(function(d,k){d.className=k===cur?'on':''});pv.hidden=cur===0;nx.hidden=cur===n-1;cnt.textContent=(cur+1)+'/'+n};
+  tr.addEventListener('scroll',function(){clearTimeout(tr._t);tr._t=setTimeout(upd,60)});
+  w.appendChild(tr);w.appendChild(pv);w.appendChild(nx);w.appendChild(cnt);w.appendChild(ds);upd();return w}
+function sm(r){var l=L();return String(l==='it'?(r.summary_it||r.summary_en||''):(r.summary_en||r.summary_it||'')).trim()}
 function onLang(f){new MutationObserver(f).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']})}
 
 function mini(r){var c=el('a','evc'+(r.cancelled?' evx':''));if(r.cancelled)c.appendChild(rib());c.href='eventi.html#ev-'+r.id;c.style.textDecoration='none';c.style.color='inherit';
-  if(r.flyer){var i=document.createElement('img');i.className='evimg';i.src=upf(r.flyer);i.alt=ttl(r);i.loading='lazy';i.style.cursor='pointer';c.appendChild(i)}else c.appendChild(flyer(r,false));
-  var b=el('div','evb');if(!r.cancelled)b.appendChild(el('span','evcd',cd(r.date)));b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));c.appendChild(b);return c}
+  if(evFl(r).length>1)c.appendChild(evGal(r,false));else if(r.flyer){var i=document.createElement('img');i.className='evimg';i.src=upf(r.flyer);i.alt=ttl(r);i.loading='lazy';i.style.cursor='pointer';c.appendChild(i)}else c.appendChild(flyer(r,false));
+  var b=el('div','evb');if(!r.cancelled)b.appendChild(el('span','evcd',cd(r.date)));b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));if(sm(r))b.appendChild(el('p','evsum',sm(r)));c.appendChild(b);return c}
 var UP=[];
 function render(){var h=document.getElementById('ev-home');if(!h)return;h.textContent='';UP.slice(0,3).forEach(function(r){h.appendChild(mini(r))})}
 load(function(u){UP=u;render()});onLang(render);

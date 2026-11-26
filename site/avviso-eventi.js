@@ -7,7 +7,7 @@
   var LG = ['it', 'en', 'de', 'sl', 'nl'];
   var T = {
     k: ['Avviso', 'Notice', 'Hinweis', 'Obvestilo', 'Mededeling'],
-    rib: ['Annullato', 'Cancelled', 'Abgesagt', 'Odpovedano', 'Geannuleerd'],
+    rib: ['Cancellato', 'Cancelled', 'Abgesagt', 'Odpovedano', 'Geannuleerd'],
     h1: ['Evento annullato', 'Event cancelled', 'Veranstaltung abgesagt', 'Dogodek odpovedan', 'Evenement geannuleerd'],
     hn: ['Eventi annullati', 'Events cancelled', 'Veranstaltungen abgesagt', 'Odpovedani dogodki', 'Evenementen geannuleerd'],
     p: ['Ci dispiace: questo appuntamento non si terrà. Ci scusiamo per il disagio.',
