@@ -496,6 +496,10 @@ function bookHref(r){return r.link||BOOK}
 function lightbox(src){var b=el('div','evlb');var i=document.createElement('img');i.src=src;i.alt='';b.appendChild(i);function c(){b.remove();document.removeEventListener('keydown',k)}function k(e){if(e.key==='Escape')c()}b.addEventListener('click',c);document.addEventListener('keydown',k);document.body.appendChild(b)}
 function menuBtn(r){if(!r.menu)return null;var a=el('a','btn',T('menu'));a.href=upf(r.menu);
   if(r.menuType==='pdf'){a.target='_blank';a.rel='noopener'}else{a.addEventListener('click',function(e){e.preventDefault();lightbox(upf(r.menu))})}return a}
+var PDFALL={it:'Scarica tutto in PDF',en:'Download all as PDF',de:'Alles als PDF herunterladen',sl:'Prenesi vse v PDF',nl:'Alles downloaden als PDF'};
+function allBtn(r){if(r.flyerPdf)return null;var f=evFl(r).slice();if(r.menu&&r.menuType!=='pdf')f.push(r.menu);f=f.filter(function(u,i){return u&&f.indexOf(u)===i});if(!f.length)return null;
+  var q=f.map(function(u){return 'f[]='+encodeURIComponent(new URL(upf(u),location.href).href)}).join('&');
+  var a=el('a','btn',PDFALL[L()]||PDFALL.it);a.href='evento-pdf.php?t='+encodeURIComponent(ttl(r))+'&'+q;a.setAttribute('download','');return a}
 function pdfBtn(r){if(!r.flyerPdf)return null;var a=el('a','btn',T('pdf'));a.href=upf(r.flyerPdf);a.target='_blank';a.rel='noopener';a.setAttribute('download','');return a}
 function flyer(r,big){if(evFl(r).length>1)return evGal(r,true);
   if(r.flyer){var mk=function(u){var i=document.createElement('img');i.className='evimg';i.src=upf(u);i.alt=ttl(r);i.loading='lazy';i.addEventListener('click',function(){lightbox(upf(u))});return i};
@@ -555,12 +559,12 @@ function card(r,past){var c=el('article','evc'+(past?' evpast':'')+(r.cancelled?
   if(!past&&!r.cancelled)b.appendChild(el('span','evcd',cd(r.date)));
   b.appendChild(el('h3',null,ttl(r)));b.appendChild(el('p','evdt',when(r)));if(sm(r))b.appendChild(el('p','evsum',sm(r)));var d=el('div','evd'+(sm(r)?' evhid':''));d.appendChild(paras(dsc(r)));b.appendChild(d);if(sm(r)?dsc(r):dsc(r).length>140)b.appendChild(moreBtn(d));
   if(r.price)b.appendChild(el('span','evpr',r.price));
-  var bt=el('div','evbt');if(!past&&!r.cancelled){var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a)}var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);if(bt.children.length)b.appendChild(bt);c.appendChild(b);return c}
+  var bt=el('div','evbt');if(!past&&!r.cancelled){var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';bt.appendChild(a)}var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);var pa=allBtn(r);if(pa)bt.appendChild(pa);if(bt.children.length)b.appendChild(bt);c.appendChild(b);return c}
 function featured(r){var f=el('article','evfeat'+(r.cancelled?' evx':''));if(r.cancelled)f.appendChild(rib());f.id='ev-'+r.id;var l=el('div');l.appendChild(flyer(r,true));var x=el('div');
   var top=el('div');top.appendChild(el('span','evtag',T('next')));if(!r.cancelled)top.appendChild(el('span','evcd',cd(r.date)));x.appendChild(top);
   x.appendChild(el('h2',null,ttl(r)));x.appendChild(el('p','evdt',when(r)));if(sm(r))x.appendChild(el('p','evsum',sm(r)));var d=el('div','evd');d.appendChild(paras(dsc(r)));x.appendChild(d);
   if(r.price)x.appendChild(el('span','evpr',r.price));
-  var bt=el('div','evbt');var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';if(!r.cancelled)bt.appendChild(a);var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);x.appendChild(bt);f.appendChild(l);f.appendChild(x);return f}
+  var bt=el('div','evbt');var a=el('a','btn fill',T('book'));a.href=bookHref(r);a.target='_blank';a.rel='noopener';if(!r.cancelled)bt.appendChild(a);var m=menuBtn(r);if(m)bt.appendChild(m);var pf=pdfBtn(r);if(pf)bt.appendChild(pf);var pa=allBtn(r);if(pa)bt.appendChild(pa);x.appendChild(bt);f.appendChild(l);f.appendChild(x);return f}
 var UP=[],PAST=[];
 function render(){var nx=document.getElementById('ev-next'),ug=document.getElementById('ev-up-g'),pg=document.getElementById('ev-past');
   nx.textContent='';ug.textContent='';pg.textContent='';
